@@ -202,6 +202,22 @@ function shortAlbum(sourceTitle) {
   return (parts[parts.length - 1] || sourceTitle).trim();
 }
 
+// 同一专辑内的曲目按定义就是不同录音，绝不能因为清洗后曲名撞车而被后续去重吃掉。
+// 例：贝多芬《「看啊，凯旋的英雄」主题 12 变奏》14 个乐章的元数据只靠开头序号区分，
+// 剥掉序号后全部同名 —— 这里给它们补 "· No. N" 保持可区分。
+export function disambiguate(titles) {
+  const counts = new Map();
+  for (const title of titles) counts.set(title, (counts.get(title) || 0) + 1);
+
+  const running = new Map();
+  return titles.map((title) => {
+    if (counts.get(title) === 1) return title;
+    const n = (running.get(title) || 0) + 1;
+    running.set(title, n);
+    return `${title} · No. ${n}`;
+  });
+}
+
 function rawTitle(file) {
   return (toText(file.title).trim() || toText(file.name))
     .replace(/\.(mp3|m4a|flac|ogg|wav|aac|wma)$/i, "");   // 曲名里可能残留任意音频扩展名
@@ -213,8 +229,17 @@ export function cleanTitle(value, { fallback = "", index = 0 } = {}) {
     .replace(/\s+/g, " ")
     .trim();
 
-  // 剥完公共前缀后常残留曲目序号，如 "25 l.van beethoven sonatina..." / "1 01 book i op. 12"
-  text = text.replace(/^[\d\s.·:-]+/, "").trim();
+  // 剥完公共前缀后常残留「卷号 + 曲目序号」，如 "I 28 mazurka..." / "To 140 01 71"。
+  // 规则：开头是纯数字就剥；是罗马数字或连接词时，只有当**后面紧跟数字**才剥
+  // ——这样 "II. Andante" 这种合法乐章编号会被保留，不会被误伤成 "Andante"。
+  let previous;
+  do {
+    previous = text;
+    text = text
+      .replace(/^\d+[\s.·:-]*/, "")
+      .replace(/^(?:[ivxlcm]+|to)[\s.·:-]+(?=\d)/i, "")
+      .trim();
+  } while (text !== previous);
 
   // 有些来源的元数据里根本没有真实曲名，只有编号（如德彪西前奏曲剥完只剩 "I 01 1"）。
   // 这种情况退回「专辑名 · 第 N 首」，至少可读且能区分。
@@ -262,17 +287,23 @@ export async function itemTracks(curatedItem) {
   const usable = (item.files || []).filter((file) => {
     if (file.format !== "VBR MP3" || !file.name) return false;
     const duration = parseDuration(file.length);
-    return duration !== null && duration >= 60 && duration <= 25 * 60;
+    // 下限只用来掐掉片段/静音/报幕，不能定太高：
+    // 古典曲目短的是常态（肖邦前奏曲、贝多芬变奏、萨蒂小品常在 40–60 秒），
+    // 曾用 60 秒下限，把贝多芬那套 12 变奏里的 12 首全刷掉了。
+    return duration !== null && duration >= 25 && duration <= 30 * 60;
   });
   // 先在整张专辑范围内剥掉公共前缀，再逐条清洗
-  const titles = stripCommonPrefix(usable.map((file) => rawTitle(file)));
+  const titles = disambiguate(
+    stripCommonPrefix(usable.map((file) => rawTitle(file)))
+      .map((title, index) => cleanTitle(title, { fallback: shortAlbum(sourceTitle), index })),
+  );
 
   return usable.flatMap((file, index) => {
     const duration = parseDuration(file.length);
 
     return [{
       id: `${identifier}/${file.name}`,
-      title: cleanTitle(titles[index], { fallback: shortAlbum(sourceTitle), index }),
+      title: titles[index],
       composer: resolveComposer(file, metadata, fallbackComposer),
       url: buildTrackUrl(identifier, file.name),
       duration,

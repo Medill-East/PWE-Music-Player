@@ -1,22 +1,22 @@
 # 音乐来源与授权 / Music Credits
 
-本文件由 `node scripts/build-credits.mjs` 根据 `catalog.json` 自动生成。当前曲库包含 965 首曲目，来自 31 个 Internet Archive item。
+本文件由 `node scripts/build-credits.mjs` 根据 `catalog.json` 自动生成。当前曲库包含 1058 首曲目，来自 31 个 Internet Archive item。
 
-This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. The current catalog contains 965 tracks from 31 Internet Archive items.
+This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. The current catalog contains 1058 tracks from 31 Internet Archive items.
 
 ## Bach: Well​-​Tempered Clavier, Book 1
 
 - Internet Archive：<https://archive.org/details/bach-well-tempered-clavier-book-1>
 - 演奏者/上传者 / Performer or uploader：Kimiko Ishizaka
 - 授权 / License：[公有领域标记](http://creativecommons.org/publicdomain/mark/1.0/)
-- 曲目数 / Tracks：47
+- 曲目数 / Tracks：48
 
 ## OnClassical - Classical Music - The Piano Favourites of Alessandro Deljavan
 
 - Internet Archive：<https://archive.org/details/jamendo-140751>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：31
+- 曲目数 / Tracks：32
 
 ## OnClassical - Classical Music - The Essential Chamber Music
 
@@ -51,14 +51,14 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - Internet Archive：<https://archive.org/details/jamendo-169920>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-ND](http://creativecommons.org/licenses/by-nc-nd/3.0/)
-- 曲目数 / Tracks：39
+- 曲目数 / Tracks：41
 
 ## OnClassical - Classical Music - Clementi, Beethoven: Sonatina(s)
 
 - Internet Archive：<https://archive.org/details/jamendo-169923>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-ND](http://creativecommons.org/licenses/by-nc-nd/3.0/)
-- 曲目数 / Tracks：23
+- 曲目数 / Tracks：25
 
 ## OnClassical - Classical Music - Scherzos (Gershwin, Mozart, Liszt...)
 
@@ -93,21 +93,21 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - Internet Archive：<https://archive.org/details/jamendo-175013>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：33
+- 曲目数 / Tracks：39
 
 ## OnClassical - Classical Music - Chopin: (Complete) Mazurkas
 
 - Internet Archive：<https://archive.org/details/jamendo-175047>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：57
+- 曲目数 / Tracks：59
 
 ## OnClassical - Classical Music - Mozart family: Nannerl Notenbuch
 
 - Internet Archive：<https://archive.org/details/jamendo-175086>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：35
+- 曲目数 / Tracks：53
 
 ## OnClassical - Classical Music - J.S. Bach: The Goldberg Variations, BWV 988
 
@@ -121,21 +121,21 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - Internet Archive：<https://archive.org/details/jamendo-175216>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：63
+- 曲目数 / Tracks：66
 
 ## OnClassical - Classical Music - J. S. Bach: Little Preludes and Fugues
 
 - Internet Archive：<https://archive.org/details/jamendo-175220>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：37
+- 曲目数 / Tracks：49
 
 ## OnClassical - Classical Music - F. Chopin: 24 Preludes Op. 28 and 4 Scherzos
 
 - Internet Archive：<https://archive.org/details/jamendo-175231>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：18
+- 曲目数 / Tracks：28
 
 ## OnClassical - Classical Music - Debussy: (Complete) Preludes. Book I, II
 
@@ -149,7 +149,7 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - Internet Archive：<https://archive.org/details/jamendo-175593>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：15
+- 曲目数 / Tracks：30
 
 ## OnClassical - Classical Music - L. Janacek: Piano Works
 
@@ -170,14 +170,14 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - Internet Archive：<https://archive.org/details/jamendo-178400>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
-- 曲目数 / Tracks：25
+- 曲目数 / Tracks：52
 
 ## OnClassical - Classical Music - Mussorgsky: Pictures at an Exhibition
 
 - Internet Archive：<https://archive.org/details/jamendo-187250>
 - 演奏者/上传者 / Performer or uploader：OnClassical
 - 授权 / License：[CC BY-NC-ND](http://creativecommons.org/licenses/by-nc-nd/3.0/)
-- 曲目数 / Tracks：24
+- 曲目数 / Tracks：27
 
 ## OnClassical - Classical Music - Chopin: Etudes Op. 10, 25
 
@@ -198,21 +198,21 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - Internet Archive：<https://archive.org/details/musopen-chopin>
 - 演奏者/上传者 / Performer or uploader：Aaron Dunn
 - 授权 / License：[CC0](http://creativecommons.org/publicdomain/zero/1.0/)
-- 曲目数 / Tracks：16
+- 曲目数 / Tracks：15
 
 ## Musopen - The Complete Works of Frédéric Chopin (FLAC)
 
 - Internet Archive：<https://archive.org/details/musopen-chopin-complete-works-flac>
 - 演奏者/上传者 / Performer or uploader：Various Artists
 - 授权 / License：[CC0](https://creativecommons.org/publicdomain/zero/1.0/)
-- 曲目数 / Tracks：195
+- 曲目数 / Tracks：186
 
 ## Robert Schumann Kinderszenen Op. 15
 
 - Internet Archive：<https://archive.org/details/schumann-kinderszenen-op.-15>
 - 演奏者/上传者 / Performer or uploader：Gregory Tait
 - 授权 / License：[CC BY](https://creativecommons.org/licenses/by/4.0/)
-- 曲目数 / Tracks：6
+- 曲目数 / Tracks：7
 
 ## The Open Goldberg Variations
 
