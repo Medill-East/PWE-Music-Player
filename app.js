@@ -118,6 +118,19 @@ function clearStore(database, storeName) {
   });
 }
 
+// 把失败原因说清楚。笼统的「加载失败」无法定位问题——
+// MediaError 的四种类型指向完全不同的原因（网络 / 解码 / 格式 / 中止）。
+export function describeMediaError(audio) {
+  const codes = { 1: "ABORTED", 2: "NETWORK", 3: "DECODE", 4: "SRC_NOT_SUPPORTED" };
+  const error = audio?.error;
+  const parts = [];
+  if (error) parts.push(`${codes[error.code] || error.code}${error.message ? `: ${error.message}` : ""}`);
+  else parts.push("TIMEOUT");
+  parts.push(`net=${audio?.networkState ?? "?"}`, `ready=${audio?.readyState ?? "?"}`);
+  if (typeof navigator !== "undefined" && navigator.onLine === false) parts.push("offline");
+  return parts.join(" ");
+}
+
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   const whole = Math.floor(seconds);
@@ -165,6 +178,7 @@ async function initPlayer() {
   let failureInProgress = false;
   let consecutiveFailures = 0;
   let trackAttempts = 0;
+  let lastFailureDetail = "";
   let sleepTimer = null;
   let sleepTicker = null;
   let sleepDeadline = 0;
@@ -322,7 +336,9 @@ async function initPlayer() {
     queuedTrack = track;
     preloader = document.createElement("audio");
     preloader.hidden = true;
-    preloader.preload = "auto";
+    // 只预取元数据，不要用 "auto"。"auto" 会并行下载整首下一曲，
+    // 与正在播放的曲目抢带宽；archive.org 本就慢，这足以把当前曲目拖到超时。
+    preloader.preload = "metadata";
     preloader.src = track.url;
     document.body.append(preloader);
     preloader.load();
@@ -414,11 +430,12 @@ async function initPlayer() {
 
       consecutiveFailures += 1;
       if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+        lastFailureDetail = describeMediaError(elements.audio);
         // 连续失败多半是网络/上游出问题，不是曲目问题。停在这里，
         // 否则自动跳过会一路烧穿曲库，表现为「曲目飞快地自己往下跳」。
         clearTimeout(loadTimer);
         elements.audio.pause();
-        setStatus("networkTrouble", "error");
+        setStatus("networkTrouble", "error", { detail: lastFailureDetail });
         return;
       }
 
@@ -554,8 +571,9 @@ async function initPlayer() {
       armLoadTimeout();
       try {
         await elements.audio.play();
-      } catch {
-        setStatus("playFailed", "error");
+      } catch (error) {
+        // AbortError 只是「这次 play() 被新的加载打断了」，属正常流程，不该报错给用户。
+        if (error.name !== "AbortError") setStatus("playFailed", "error");
       }
     } else {
       elements.audio.pause();
