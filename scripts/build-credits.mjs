@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { getLicenseLabel } from "../license.js";
 
 const ARCHIVE_ORIGIN = "https://archive.org";
+const PANDORA_ORIGIN = "https://www.ibiblio.org/pandora/mp3/";
 
 function toText(value) {
   if (Array.isArray(value)) return value.map(toText).filter(Boolean).join(", ");
@@ -25,6 +26,7 @@ function summarizeSources(tracks) {
   for (const track of tracks) {
     const summary = sources.get(track.source) || {
       identifier: track.source,
+      sourceTitle: track.sourceTitle,
       count: 0,
       licenses: new Set(),
     };
@@ -39,6 +41,9 @@ async function buildCredits() {
   const catalog = JSON.parse(await readFile(new URL("../catalog.json", import.meta.url), "utf8"));
   const sources = summarizeSources(catalog.tracks || []);
   const entries = await Promise.all(sources.map(async (source) => {
+    if (source.identifier.startsWith("pandora/")) {
+      return { ...source, metadata: { title: source.sourceTitle, creator: "Pandora Records" }, pandora: true };
+    }
     try {
       return { ...source, metadata: await getItemMetadata(source.identifier) };
     } catch (error) {
@@ -50,10 +55,10 @@ async function buildCredits() {
   const lines = [
     "# 音乐来源与授权 / Music Credits",
     "",
-    `本文件由 \`node scripts/build-credits.mjs\` 根据 \`catalog.json\` 自动生成。当前曲库包含 ${catalog.count} 首曲目，来自 ${entries.length} 个 Internet Archive item。`,
+    `本文件由 \`node scripts/build-credits.mjs\` 根据 \`catalog.json\` 自动生成。当前曲库包含 ${catalog.count} 首曲目，来自 ${entries.length} 个来源。`,
     "",
     "This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. The current catalog contains "
-      + `${catalog.count} tracks from ${entries.length} Internet Archive items.`,
+      + `${catalog.count} tracks from ${entries.length} sources.`,
     "",
   ];
 
@@ -67,10 +72,14 @@ async function buildCredits() {
       return `[${escapeMarkdown(label)}](${url})`;
     }).join("、");
 
+    const sourceLink = entry.pandora
+      ? `- Pandora Records：<${new URL(`${entry.identifier.slice("pandora/".length)}/`, PANDORA_ORIGIN).href}>`
+      : `- Internet Archive：<https://archive.org/details/${encodeURIComponent(entry.identifier)}>`;
+
     lines.push(
       `## ${escapeMarkdown(title)}`,
       "",
-      `- Internet Archive：<https://archive.org/details/${encodeURIComponent(entry.identifier)}>`,
+      sourceLink,
       `- 演奏者/上传者 / Performer or uploader：${escapeMarkdown(attribution)}`,
       `- 授权 / License：${licenses}`,
       `- 曲目数 / Tracks：${entry.count}`,

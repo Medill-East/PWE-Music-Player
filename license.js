@@ -1,5 +1,6 @@
 export function getLicenseLabel(url) {
   const normalized = String(url).toLowerCase();
+  if (normalized.includes("eff.org/pages/open-audio-license")) return "EFF Open Audio License";
   if (normalized.includes("publicdomain/zero")) return "CC0";
   if (normalized.includes("publicdomain/mark")) return "公有领域标记";
   if (normalized.includes("by-nc-nd")) return "CC BY-NC-ND";

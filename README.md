@@ -22,14 +22,15 @@ Open and listen — no account needed. On phones, use “Add to Home Screen” t
 
 ### 曲库怎么来的
 
-全部录音来自 Internet Archive，并经过逐项人工核验，确认是公版或由权利人自行采用 Creative Commons 授权。当前曲库有 1394 首，约 84 小时，涵盖 34 位作曲家，包括：
+全部录音来自 Internet Archive，并经过逐项人工核验，确认是公版或由权利人自行采用 Creative Commons 授权。当前曲库有 1775 首，约 126 小时，涵盖 49 位作曲家，包括：
 
 - Musopen 通过众筹制作、以 CC0 释出的肖邦作品全集；
 - Kimiko Ishizaka 众筹并释出公有领域的 Open Goldberg Variations 与 Open Well-Tempered Clavier；
 - OnClassical 厂牌自行授权的专业录音（演奏者均具名），涵盖萧邦、巴赫、贝多芬、德彪西、萨蒂、格里格、莫扎特、穆索尔斯基、雅纳切克、斯科特·乔普林等；
 - Beethoven 大提琴奏鸣曲等室内乐；
 - 采用 CC 授权、由演奏者本人发布的古典吉他作品；
-- 大键琴、管风琴，以及长笛/单簧管等管乐室内乐。
+- 大键琴、管风琴，以及长笛/单簧管等管乐室内乐；
+- **Pandora Records** 以 EFF 开放授权公开的自有母带（1970–80 年代古典厂牌），包含古乐器演奏、羽管键琴、巴洛克长笛与室内乐团。
 
 我们**只收录权利人自身授权的录音**。任何由第三方上传、标注授权与实际权利状态不符的内容一律不收——例如商业厂牌的历史录音，即使被贴上公版标记也不采用。
 
@@ -39,7 +40,7 @@ Open and listen — no account needed. On phones, use “Add to Home Screen” t
 
 ### 授权与非商业声明
 
-本项目为公益性质，免费、无广告、无捐赠、不盈利。本仓库不托管任何音频文件；浏览器会直接从 Internet Archive 获取音频。
+本项目为公益性质，免费、无广告、无捐赠、不盈利。本仓库不托管任何音频文件；浏览器直接从 Internet Archive 与 ibiblio.org 获取音频。
 
 代码采用 MIT 许可。音乐保留各自的第三方授权，详情见 [CREDITS.md](CREDITS.md) 与播放器内的逐曲标注。部分曲目采用 CC BY-NC 授权，禁止商业使用。
 
@@ -78,14 +79,15 @@ The “light music radio” stations in common music apps are often fixed playli
 
 ### Where does the catalog come from?
 
-Every recording comes from Internet Archive and has been checked individually to confirm it is public domain or was licensed under Creative Commons by the rights holder. The current catalog contains 1394 tracks—about 84 hours—across 34 composers, including:
+Every recording comes from Internet Archive and has been checked individually to confirm it is public domain or was licensed under Creative Commons by the rights holder. The current catalog contains 1775 tracks—about 126 hours—across 49 composers, including:
 
 - Musopen’s crowdfunded, CC0 complete Chopin works;
 - Kimiko Ishizaka’s crowdfunded, public-domain Open Goldberg Variations and Open Well-Tempered Clavier;
 - professional recordings self-licensed by the OnClassical label (performers are credited by name), covering Chopin, Bach, Beethoven, Debussy, Satie, Grieg, Mozart, Mussorgsky, Janáček and Scott Joplin;
 - chamber works such as Beethoven’s cello sonatas;
 - CC-licensed classical guitar works published by the performers themselves;
-- harpsichord, organ, and wind chamber works (flute, clarinet, bassoon).
+- harpsichord, organ, and wind chamber works (flute, clarinet, bassoon);
+- **Pandora Records** masters released under the EFF Open Audio License — a 1970s–80s classical label — covering period instruments, harpsichord, baroque flute and chamber orchestra.
 
 Only recordings licensed by their own rights holders are included. Anything uploaded by a third party whose stated license does not match the actual rights position is excluded — commercial-label historical recordings are left out even when someone has tagged them as public domain.
 
@@ -95,7 +97,7 @@ Automated searches bring in unrelated field recordings, audiobooks, and post-pun
 
 ### Licensing and non-commercial statement
 
-This is a public-interest project: it is free, carries no advertising, accepts no donations, and earns no revenue. The repository does not host audio. Your browser streams each file directly from Internet Archive.
+This is a public-interest project: it is free, carries no advertising, accepts no donations, and earns no revenue. The repository does not host audio. Your browser streams each file directly from Internet Archive and ibiblio.org.
 
 The code is MIT-licensed. Each recording retains its own third-party terms; see [CREDITS.md](CREDITS.md) and the per-track attribution in the player. Some recordings use CC BY-NC licenses and may not be used commercially.
 

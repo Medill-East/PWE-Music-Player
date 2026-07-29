@@ -114,4 +114,8 @@ test("license URLs are reduced to readable attribution labels", () => {
     getLicenseLabel("https://creativecommons.org/licenses/by-nc-nd/3.0/"),
     "CC BY-NC-ND",
   );
+  assert.equal(
+    getLicenseLabel("https://www.eff.org/pages/open-audio-license"),
+    "EFF Open Audio License",
+  );
 });

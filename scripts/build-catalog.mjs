@@ -1,6 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
+import { pandoraTracks } from "./pandora-source.mjs";
+
 const ARCHIVE_ORIGIN = "https://archive.org";
 const TARGET_TRACKS = 500;
 // 必须按词边界匹配，不能用子串包含。
@@ -21,45 +23,74 @@ const COMMERCIAL_LABEL_PATTERN = new RegExp(
   "i",
 );
 const AUDIOBOOK_COLLECTIONS = ["librivoxaudio", "audio_bookspoetry"];
-const COMPOSERS = [
-  ["Chopin", /\bchopin\b/i],
-  ["Debussy", /\bdebussy\b/i],
-  ["Satie", /\bsatie\b/i],
-  ["Grieg", /\bgrieg\b/i],
-  ["Schumann", /\bschumann\b/i],
-  ["Schubert", /\bschubert\b/i],
-  ["Liszt", /\bliszt\b/i],
-  ["Ravel", /\bravel\b/i],
-  ["Fauré", /\b(?:faur[eé])\b/i],
-  ["Bach", /\bbach\b/i],
-  ["Mozart", /\bmozart\b/i],
-  ["Beethoven", /\bbeethoven\b/i],
-  ["Brahms", /\bbrahms\b/i],
-  // 注意拼写变体：来源的曲名里同一位作曲家常有不同转写/笔误
-  // （Moussorgsky / Mussorgsky、Mendelssohnh-B. 多了个 h），
-  // 名单不覆盖就会退回 fallback，署名精度下降。
-  ["Mendelssohn", /\bmendelssohnh?\b/i],
-  ["Tchaikovsky", /\b(?:tchaikovsky|chaikovsky)\b/i],
-  ["Mussorgsky", /\b(?:mo?ussorgsky|musorgsky)\b/i],
-  ["Haydn", /\bhaydn\b/i],
-  ["Janáček", /\bjan[aá][cč]ek\b/i],
-  ["Dvořák", /\bdvo[rř][aá]k\b/i],
-  ["Gershwin", /\bgershwin\b/i],
-  ["Sibelius", /\bsibelius\b/i],
-  ["Scriabin", /\b(?:scriabin|skriabin)\b/i],
-  ["Albéniz", /\balb[eé]niz\b/i],
-  ["Granados", /\bgranados\b/i],
-  ["Saint-Saëns", /\bsaint[- ]sa[eë]ns\b/i],
-  ["Massenet", /\bmassenet\b/i],
-  ["Ysaÿe", /\bysa[yÿ]e\b/i],
-  ["Taneyev", /\btaneyev\b/i],
-  ["Reynaldo Hahn", /\bhahn\b/i],
-  ["Rebecca Clarke", /\bclarke\b/i],
-  ["Buxtehude", /\bbuxtehude\b/i],
-  ["Clementi", /\bclementi\b/i],
-  ["Donizetti", /\bdonizetti\b/i],
-  ["Scott Joplin", /\bjoplin\b/i],
+// 作曲家识别。两条规则是踩出来的，改动前先读：
+//
+//  1) 结尾**不能用 \b**。曲名里常见 "Brahms1"、"Rachmaninoff2" 这种紧跟序号的写法，
+//     而 \b 在字母与数字之间不成立，会整批漏掉。改用 (?![a-z])：允许后接数字/符号，
+//     但仍排除 "Brahmsian" 这类更长的词。
+//  2) 开头用 (?<![a-z]) 而不是 \b。曲名里也有 "7Handel3" 这种数字打头的编号，
+//     \b 在数字与字母之间同样不成立。负向后顾只排除**字母**在前的情况，
+//     所以 "Offenbach" 仍不会被误判成 Bach，而 "7Handel3" 能正确命中。
+//     像 "JSBACH_B_min" 这种前面粘着字母缩写的，另写一条 js\s*bach 别名去覆盖。
+//
+// 只放**作曲家**，不要放演奏者。Pandora 的路径里有 Goldstein / Hokanson / Doan /
+// Tipton 等钢琴家、长笛家的名字，把他们当作曲家会张冠李戴。
+const COMPOSER_ALIASES = [
+  ["Chopin", ["chopin"]],
+  ["Bach", ["bach", "js\\s*bach"]],
+  ["Beethoven", ["beethoven"]],
+  ["Mozart", ["mozart"]],
+  ["Schubert", ["schubert"]],
+  ["Schumann", ["schumann"]],
+  ["Brahms", ["brahms"]],
+  ["Debussy", ["debussy"]],
+  ["Satie", ["satie"]],
+  ["Grieg", ["grieg"]],
+  ["Liszt", ["liszt"]],
+  ["Ravel", ["ravel"]],
+  ["Fauré", ["faur[eé]"]],
+  ["Haydn", ["haydn"]],
+  ["Handel", ["handel", "haendel", "h[aä]ndel"]],
+  ["Vivaldi", ["vivaldi"]],
+  ["Rameau", ["rameau"]],
+  ["Telemann", ["telemann"]],
+  ["Scarlatti", ["scarlatti"]],
+  ["Corelli", ["corelli"]],
+  ["Purcell", ["purcell"]],
+  ["Couperin", ["couperin"]],
+  ["Buxtehude", ["buxtehude"]],
+  ["Rachmaninoff", ["rachmanino[fv]+", "rachmaninov"]],
+  ["Martinů", ["martin[uů]"]],
+  ["Czerny", ["czerny"]],
+  ["Diabelli", ["diabelli"]],
+  ["Cambini", ["cambini"]],
+  ["Romberg", ["romberg"]],
+  ["Karg-Elert", ["karg[- ]?elert"]],
+  ["Clementi", ["clementi"]],
+  ["Donizetti", ["donizetti"]],
+  ["Mendelssohn", ["mendelssohnh?"]],
+  ["Tchaikovsky", ["tchaikovsky", "chaikovsky"]],
+  ["Mussorgsky", ["mo?ussorgsky", "musorgsky"]],
+  ["Janáček", ["jan[aá][cč]ek"]],
+  ["Dvořák", ["dvo[rř][aá]k"]],
+  ["Gershwin", ["gershwin"]],
+  ["Sibelius", ["sibelius"]],
+  ["Scriabin", ["scriabin", "skriabin"]],
+  ["Albéniz", ["alb[eé]niz"]],
+  ["Granados", ["granados"]],
+  ["Saint-Saëns", ["saint[- ]sa[eë]ns"]],
+  ["Massenet", ["massenet"]],
+  ["Ysaÿe", ["ysa[yÿ]e"]],
+  ["Taneyev", ["taneyev"]],
+  ["Reynaldo Hahn", ["hahn"]],
+  ["Rebecca Clarke", ["clarke"]],
+  ["Scott Joplin", ["joplin"]],
 ];
+
+const COMPOSERS = COMPOSER_ALIASES.map(([name, aliases]) => [
+  name,
+  new RegExp(`(?<![a-z])(?:${aliases.join("|")})(?![a-z])`, "i"),
+]);
 
 // 人工核验白名单。新增条目前必须逐项确认下面三条，否则不要加：
 //
@@ -434,13 +465,17 @@ async function buildCatalog() {
     console.log(`已处理 ${Math.min(offset + batch.length, CURATED.length)}/${CURATED.length} 个白名单 item`);
   }
 
+  const pandora = await pandoraTracks({ cleanTitle, resolveComposer });
+  for (const track of pandora) tracks.set(track.id, track);
+  console.log(`已追加 Pandora 曲目：${pandora.length} 首`);
+
   const byId = [...tracks.values()].sort((a, b) => a.id.localeCompare(b.id, "en"));
   const sortedTracks = dedupeByWork(byId);
   const dropped = byId.length - sortedTracks.length;
   if (dropped > 0) console.log(`同作品去重：移除 ${dropped} 首重复曲目`);
   if (sortedTracks.length < TARGET_TRACKS) {
     console.warn(
-      `警告：白名单过滤后仅 ${sortedTracks.length} 首，低于 ${TARGET_TRACKS} 首目标，但仍已写出 catalog.json`,
+      `警告：过滤后仅 ${sortedTracks.length} 首，低于 ${TARGET_TRACKS} 首目标，但仍已写出 catalog.json`,
     );
   }
 

@@ -1,8 +1,8 @@
 # 音乐来源与授权 / Music Credits
 
-本文件由 `node scripts/build-credits.mjs` 根据 `catalog.json` 自动生成。当前曲库包含 1394 首曲目，来自 59 个 Internet Archive item。
+本文件由 `node scripts/build-credits.mjs` 根据 `catalog.json` 自动生成。当前曲库包含 1775 首曲目，来自 119 个来源。
 
-This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. The current catalog contains 1394 tracks from 59 Internet Archive items.
+This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. The current catalog contains 1775 tracks from 119 sources.
 
 ## Bach: Well​-​Tempered Clavier, Book 1
 
@@ -151,10 +151,10 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
 - 曲目数 / Tracks：10
 
-## OnClassical - Classical Music - J. S. Bach: Little Preludes and Fugues
+## jamendo-175220
 
 - Internet Archive：<https://archive.org/details/jamendo-175220>
-- 演奏者/上传者 / Performer or uploader：OnClassical
+- 演奏者/上传者 / Performer or uploader：元数据暂时无法读取 / Metadata unavailable
 - 授权 / License：[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/3.0/)
 - 曲目数 / Tracks：49
 
@@ -403,6 +403,426 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - 授权 / License：[CC0](https://creativecommons.org/publicdomain/zero/1.0/)
 - 曲目数 / Tracks：182
 
+## Pandora Records — pan116a
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/2_pianos/pan116a/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：7
+
+## Pandora Records — pan116b
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/2_pianos/pan116b/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — pan116c
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/2_pianos/pan116c/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — pan116d
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/2_pianos/pan116d/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：2
+
+## Pandora Records — pan116e
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/2_pianos/pan116e/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：7
+
+## Pandora Records — bassoon
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/bassoon/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：10
+
+## Pandora Records — Arthur Grossman Live
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/bassoon/Arthur_Grossman_Live/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：1
+
+## Pandora Records — Bassoonia
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/bassoon/Bassoonia/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — Mozart
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/bassoon/Mozart/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — cello
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/cello/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：6
+
+## Pandora Records — 05-06 Selections
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/05-06_Selections/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：9
+
+## Pandora Records — 07 Selections
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/07_Selections/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：4
+
+## Pandora Records — DEC-06
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/DEC-06/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：12
+
+## Pandora Records — MAR-08
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/MAR-08/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：7
+
+## Pandora Records — MAY-08
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/MAY-08/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：2
+
+## Pandora Records — NOV-06
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/NOV-06/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：8
+
+## Pandora Records — NOV-07
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/NOV-07/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：5
+
+## Pandora Records — OCT-08
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/OCT-08/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — Selections 09
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/Selections_09/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — Selections 10
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/chamber_orchestra/Selections_10/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — Bach traverso
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Murray/Bach_traverso/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — Contest-pieces
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Murray/Contest-pieces/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：5
+
+## Pandora Records — Czerny concertante
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Murray/Czerny_concertante/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：4
+
+## Pandora Records — Handel Bach
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Murray/Handel_Bach/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：7
+
+## Pandora Records — Mozart
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Murray/Mozart/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：2
+
+## Pandora Records — traverso
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Murray/traverso/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：7
+
+## Pandora Records — Live
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Skowronek/Live/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — Methodical Sonatas
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Skowronek/Methodical_Sonatas/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：6
+
+## Pandora Records — Live
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Tipton/Live/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：11
+
+## Pandora Records — Platinum Flute
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/flute/Tipton/Platinum_Flute/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：4
+
+## Pandora Records — Nielsen
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/Galway/Nielsen/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：3
+
+## Pandora Records — Romberg
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/Galway/Romberg/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：4
+
+## Pandora Records — Vol2
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Bach_traverso/Vol2/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：4
+
+## Pandora Records — Vol3
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Bach_traverso/Vol3/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：2
+
+## Pandora Records — Baset horn
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Baset_horn/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：1
+
+## Pandora Records — Book1
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Chopin_etudes/Book1/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：12
+
+## Pandora Records — Chopin Liszt
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Chopin_Liszt/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：9
+
+## Pandora Records — Flemish harpsichord
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Flemish_harpsichord/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：20
+
+## Pandora Records — Italian harpsichord
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Italian_harpsichord/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：9
+
+## Pandora Records — keyboard lute
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/keyboard_lute/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：13
+
+## Pandora Records — Revival harpsichord
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Revival_harpsichord/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：17
+
+## Pandora Records — Schubert Octet
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/historical_instruments/Schubert_Octet/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：1
+
+## Pandora Records — Heiden Horn Quintet
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/horn/Heiden_Horn_Quintet/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：2
+
+## Pandora Records — Dussaut
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/Dussaut/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：10
+
+## Pandora Records — Bach transcriptions
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/Goldstein/Bach_transcriptions/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：7
+
+## Pandora Records — Brahms Walzes
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/Goldstein/Brahms_Walzes/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：15
+
+## Pandora Records — Variations Brahms Handel
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/Goldstein/Variations_Brahms_Handel/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：1
+
+## Pandora Records — 90th
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/Hokanson/90th/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：7
+
+## Pandora Records — Live
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/Hokanson/Live/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：6
+
+## Pandora Records — Master Works
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/Hokanson/Master_Works/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：28
+
+## Pandora Records — Bach,Schumann
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/O_Doan/Bach,Schumann/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：4
+
+## Pandora Records — Beethoven Diabelli
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/O_Doan/Beethoven_Diabelli/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：12
+
+## Pandora Records — Concerti Chopin,Moszkowski
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/O_Doan/Concerti_Chopin,Moszkowski/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：6
+
+## Pandora Records — Concerti Grieg,Rachmaninoff
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/O_Doan/Concerti_Grieg,Rachmaninoff/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：6
+
+## Pandora Records — Liszt,Strauss
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/O_Doan/Liszt,Strauss/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：2
+
+## Pandora Records — Mozart
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/piano/O_Doan/Mozart/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：1
+
+## Pandora Records — trombone
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/trombone/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：5
+
+## Pandora Records — Beethoven played by Paul Rosenthal
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/violin/Beethoven_played_by_Paul_Rosenthal/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：6
+
+## Pandora Records — Denes Zsigmondy plays Schubert
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/violin/Denes_Zsigmondy_plays_Schubert/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：6
+
+## Pandora Records — Cambini
+
+- Pandora Records：<https://www.ibiblio.org/pandora/mp3/wind_quintet/Cambini/>
+- 演奏者/上传者 / Performer or uploader：Pandora Records
+- 授权 / License：[EFF Open Audio License](https://www.eff.org/pages/open-audio-license)
+- 曲目数 / Tracks：9
+
 ## Robert Schumann Kinderszenen Op. 15
 
 - Internet Archive：<https://archive.org/details/schumann-kinderszenen-op.-15>
@@ -410,10 +830,10 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - 授权 / License：[CC BY](https://creativecommons.org/licenses/by/4.0/)
 - 曲目数 / Tracks：7
 
-## The\_Open\_Goldberg\_Variations-11823
+## The Open Goldberg Variations
 
 - Internet Archive：<https://archive.org/details/The_Open_Goldberg_Variations-11823>
-- 演奏者/上传者 / Performer or uploader：元数据暂时无法读取 / Metadata unavailable
+- 演奏者/上传者 / Performer or uploader：Kimiko Ishizaka
 - 授权 / License：[CC0](http://creativecommons.org/publicdomain/zero/1.0/)
 - 曲目数 / Tracks：16
 
