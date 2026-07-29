@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwe-music-player-shell-v4";
+const CACHE_NAME = "pwe-music-player-shell-v5";
 const APP_SHELL = [
   "./",
   "./index.html",

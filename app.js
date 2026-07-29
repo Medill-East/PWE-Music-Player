@@ -14,8 +14,14 @@ const LISTEN_THRESHOLD_SECONDS = 30;
 const LOAD_TIMEOUT_MS = 45_000;
 // 连续失败达到这个数就停止自动跳过：网络出问题时不能让播放器一路烧穿整个曲库。
 const MAX_CONSECUTIVE_FAILURES = 3;
-// archive.org 单个存储节点约 1/5 概率瞬时失败，同一曲目先重试再说。
-const MAX_TRACK_ATTEMPTS = 3;
+// 同一曲目先重试再说，原因有两层：
+//   1) archive.org 单个存储节点约 1/5 概率瞬时失败；
+//   2) 部分网络环境下到存储节点子域名的连接会被间歇性 RST（实测 ERR_CONNECTION_RESET，
+//      同一首连着两个不同节点都被切断，但换个时间又能放）。
+// 两种都属于「重试有用」的失败，所以给足次数，并且退避后再试
+// ——连接刚被 RST 时立刻重连通常还是会被 RST。
+const MAX_TRACK_ATTEMPTS = 5;
+const RETRY_BACKOFF_MS = 900;
 
 const ALL_FILTERS = {
   kinds: new Set(["solo", "chamber", "orchestral"]),
@@ -418,7 +424,10 @@ async function initPlayer() {
       // 失败不代表这首曲子有问题。先重试同一首，重试才是这里最该做的事。
       if (trackAttempts < MAX_TRACK_ATTEMPTS) {
         trackAttempts += 1;
-        setStatus("retryingTrack", "", { title: failed.title });
+        setStatus("retryingTrack", "", { title: failed.title, attempt: trackAttempts, total: MAX_TRACK_ATTEMPTS });
+        // 退避后再试：连接刚被切断时立刻重连往往还是失败。
+        await new Promise((resolve) => setTimeout(resolve, RETRY_BACKOFF_MS * trackAttempts));
+        if (currentTrack !== failed) return;   // 退避期间用户手动切歌了，放弃这次重试
         await loadTrack(failed, true, { attempt: trackAttempts });
         return;
       }
