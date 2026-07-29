@@ -1,8 +1,8 @@
 # 音乐来源与授权 / Music Credits
 
-本文件由 `node scripts/build-credits.mjs` 根据 `catalog.json` 自动生成。当前曲库包含 966 首曲目，来自 31 个 Internet Archive item。
+本文件由 `node scripts/build-credits.mjs` 根据 `catalog.json` 自动生成。当前曲库包含 965 首曲目，来自 31 个 Internet Archive item。
 
-This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. The current catalog contains 966 tracks from 31 Internet Archive items.
+This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. The current catalog contains 965 tracks from 31 Internet Archive items.
 
 ## Bach: Well​-​Tempered Clavier, Book 1
 
@@ -219,5 +219,5 @@ This file is generated from `catalog.json` by `node scripts/build-credits.mjs`. 
 - Internet Archive：<https://archive.org/details/The_Open_Goldberg_Variations-11823>
 - 演奏者/上传者 / Performer or uploader：Kimiko Ishizaka
 - 授权 / License：[CC0](http://creativecommons.org/publicdomain/zero/1.0/)
-- 曲目数 / Tracks：32
+- 曲目数 / Tracks：31
 

@@ -118,6 +118,32 @@ function toText(value) {
   return value == null ? "" : String(value);
 }
 
+// 有些厂牌（如 OnClassical）把曲名存成
+// `{演奏者}_{专辑slug}_{序号}_{真实曲名}` 的下划线长串，直接显示极难读。
+// 通用解法：同一专辑内所有曲名的最长公共前缀，就是演奏者+专辑名那段，剥掉即可。
+// 不硬编码任何厂牌规则，对其他来源天然无副作用（它们的公共前缀本就为空）。
+export function stripCommonPrefix(titles) {
+  const usable = titles.filter((title) => title.length > 0);
+  if (usable.length < 2) return titles;
+
+  let prefix = usable[0];
+  for (const title of usable.slice(1)) {
+    let i = 0;
+    while (i < prefix.length && i < title.length && prefix[i] === title[i]) i += 1;
+    prefix = prefix.slice(0, i);
+    if (!prefix) return titles;
+  }
+  // 只在下划线/空格边界处截断，避免把半个单词吃掉
+  const boundary = Math.max(prefix.lastIndexOf("_"), prefix.lastIndexOf(" "));
+  if (boundary < 4) return titles;
+  const cut = boundary + 1;
+
+  // 剥完若普遍所剩无几，说明这批曲名本来就高度雷同，保持原样更安全
+  const stripped = titles.map((title) => (title.startsWith(prefix.slice(0, cut)) ? title.slice(cut) : title));
+  if (stripped.some((title) => title.trim().length < 4)) return titles;
+  return stripped;
+}
+
 function getLicense(metadata) {
   const candidates = Array.isArray(metadata.licenseurl)
     ? metadata.licenseurl
@@ -170,13 +196,35 @@ export function resolveComposer(file, metadata, fallbackComposer) {
   return fallbackComposer || "Unknown";
 }
 
-function cleanTitle(file) {
-  const value = toText(file.title).trim() || toText(file.name);
-  return value
-    .replace(/\.(mp3|m4a|flac|ogg|wav|aac|wma)$/i, "")   // 曲名里可能残留任意音频扩展名
+// "OnClassical - Classical Music - Debussy: (Complete) Preludes" → "Debussy: (Complete) Preludes"
+function shortAlbum(sourceTitle) {
+  const parts = String(sourceTitle).split(" - ");
+  return (parts[parts.length - 1] || sourceTitle).trim();
+}
+
+function rawTitle(file) {
+  return (toText(file.title).trim() || toText(file.name))
+    .replace(/\.(mp3|m4a|flac|ogg|wav|aac|wma)$/i, "");   // 曲名里可能残留任意音频扩展名
+}
+
+export function cleanTitle(value, { fallback = "", index = 0 } = {}) {
+  let text = String(value)
     .replace(/[_]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+
+  // 剥完公共前缀后常残留曲目序号，如 "25 l.van beethoven sonatina..." / "1 01 book i op. 12"
+  text = text.replace(/^[\d\s.·:-]+/, "").trim();
+
+  // 有些来源的元数据里根本没有真实曲名，只有编号（如德彪西前奏曲剥完只剩 "I 01 1"）。
+  // 这种情况退回「专辑名 · 第 N 首」，至少可读且能区分。
+  const meaningless = !text || /^[\divxlcm\s.·:-]+$/i.test(text);
+  if (meaningless) {
+    return fallback ? `${fallback} · No. ${index + 1}` : `No. ${index + 1}`;
+  }
+
+  // 全小写的多为文件名转来的，首字母大写读起来正常些；已有大小写的保持原样。
+  return text === text.toLowerCase() ? text.replace(/^\p{Ll}/u, (c) => c.toUpperCase()) : text;
 }
 
 async function fetchJson(url, attempts = 3) {
@@ -210,14 +258,21 @@ export async function itemTracks(curatedItem) {
   const license = getLicense(metadata);
   // 存下 item 的可读标题用于署名展示；没有就退回 identifier。
   const sourceTitle = toText(metadata.title).trim() || identifier;
-  return (item.files || []).flatMap((file) => {
-    if (file.format !== "VBR MP3" || !file.name) return [];
+
+  const usable = (item.files || []).filter((file) => {
+    if (file.format !== "VBR MP3" || !file.name) return false;
     const duration = parseDuration(file.length);
-    if (duration === null || duration < 60 || duration > 25 * 60) return [];
+    return duration !== null && duration >= 60 && duration <= 25 * 60;
+  });
+  // 先在整张专辑范围内剥掉公共前缀，再逐条清洗
+  const titles = stripCommonPrefix(usable.map((file) => rawTitle(file)));
+
+  return usable.flatMap((file, index) => {
+    const duration = parseDuration(file.length);
 
     return [{
       id: `${identifier}/${file.name}`,
-      title: cleanTitle(file),
+      title: cleanTitle(titles[index], { fallback: shortAlbum(sourceTitle), index }),
       composer: resolveComposer(file, metadata, fallbackComposer),
       url: buildTrackUrl(identifier, file.name),
       duration,

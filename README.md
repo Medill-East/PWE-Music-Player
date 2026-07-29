@@ -12,7 +12,7 @@
 
 ### 曲库怎么来的
 
-全部录音来自 Internet Archive，并经过逐项人工核验，确认是公版或由权利人自行采用 Creative Commons 授权。当前曲库有 966 首，约 53 小时，涵盖 18 位作曲家，包括：
+全部录音来自 Internet Archive，并经过逐项人工核验，确认是公版或由权利人自行采用 Creative Commons 授权。当前曲库有 965 首，约 53 小时，涵盖 18 位作曲家，包括：
 
 - Musopen 通过众筹制作、以 CC0 释出的肖邦作品全集；
 - Kimiko Ishizaka 众筹并释出公有领域的 Open Goldberg Variations 与 Open Well-Tempered Clavier；
@@ -59,7 +59,7 @@ The “light music radio” stations in common music apps are often fixed playli
 
 ### Where does the catalog come from?
 
-Every recording comes from Internet Archive and has been checked individually to confirm it is public domain or was licensed under Creative Commons by the rights holder. The current catalog contains 966 tracks—about 53 hours—across 18 composers, including:
+Every recording comes from Internet Archive and has been checked individually to confirm it is public domain or was licensed under Creative Commons by the rights holder. The current catalog contains 965 tracks—about 53 hours—across 18 composers, including:
 
 - Musopen’s crowdfunded, CC0 complete Chopin works;
 - Kimiko Ishizaka’s crowdfunded, public-domain Open Goldberg Variations and Open Well-Tempered Clavier;
