@@ -1,5 +1,15 @@
 # PWE 古典轻音乐 / PWE Classical Music
 
+### 🎧 打开收听 / Listen now
+
+## **<https://medill-east.github.io/PWE-Music-Player/>**
+
+打开即可收听，无需注册。手机上可用浏览器的「添加到主屏幕」当作 App 使用。
+
+Open and listen — no account needed. On phones, use “Add to Home Screen” to run it like an app.
+
+---
+
 ## 中文
 
 ### 这是什么
