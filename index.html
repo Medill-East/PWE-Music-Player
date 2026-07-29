@@ -131,6 +131,15 @@
     <script type="module" src="app.js"></script>
     <script>
       if ("serviceWorker" in navigator) {
+        // 新版本接管时自动重载一次，否则页面会继续跑缓存里的旧代码，
+        // 用户得手动刷两遍才能拿到更新。
+        const hadController = Boolean(navigator.serviceWorker.controller);
+        let reloading = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (!hadController || reloading) return;   // 首次安装无需重载
+          reloading = true;
+          location.reload();
+        });
         window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
       }
     </script>

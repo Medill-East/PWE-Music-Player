@@ -14,6 +14,8 @@ const LISTEN_THRESHOLD_SECONDS = 30;
 const LOAD_TIMEOUT_MS = 45_000;
 // 连续失败达到这个数就停止自动跳过：网络出问题时不能让播放器一路烧穿整个曲库。
 const MAX_CONSECUTIVE_FAILURES = 3;
+// archive.org 单个存储节点约 1/5 概率瞬时失败，同一曲目先重试再说。
+const MAX_TRACK_ATTEMPTS = 3;
 
 const ALL_FILTERS = {
   kinds: new Set(["solo", "chamber", "orchestral"]),
@@ -162,6 +164,7 @@ async function initPlayer() {
   let loadToken = 0;
   let failureInProgress = false;
   let consecutiveFailures = 0;
+  let trackAttempts = 0;
   let sleepTimer = null;
   let sleepTicker = null;
   let sleepDeadline = 0;
@@ -395,6 +398,15 @@ async function initPlayer() {
     failureInProgress = true;
     const failed = currentTrack;
     try {
+      // archive.org 的存储节点有明显的瞬时失败率（实测同一 URL 连发 5 次会出现一次 500），
+      // 失败不代表这首曲子有问题。先重试同一首，重试才是这里最该做的事。
+      if (trackAttempts < MAX_TRACK_ATTEMPTS) {
+        trackAttempts += 1;
+        setStatus("retryingTrack", "", { title: failed.title });
+        await loadTrack(failed, true, { attempt: trackAttempts });
+        return;
+      }
+
       if (permanent) {
         bad.add(failed.id);
         await writeKey(database, BAD_STORE, failed.id);
@@ -426,9 +438,10 @@ async function initPlayer() {
     }, LOAD_TIMEOUT_MS);
   }
 
-  async function loadTrack(track, shouldPlay = false) {
+  async function loadTrack(track, shouldPlay = false, { attempt = 0 } = {}) {
     clearTimeout(loadTimer);
     const token = ++loadToken;
+    if (track !== currentTrack) trackAttempts = 0;   // 换曲目就重置重试计数
     currentTrack = track;
     emptyView = "";
     listenedSeconds = 0;
@@ -446,7 +459,9 @@ async function initPlayer() {
     elements.duration.textContent = formatTime(track.duration);
     setStatus("connectingArchive");
     updateMediaSession(track);
-    elements.audio.src = track.url;
+    // 重试时加一个无意义的查询参数：archive.org 会忽略它，但浏览器会因此
+    // 重新发起请求并重新走 302，多半会落到另一个存储节点上。
+    elements.audio.src = attempt > 0 ? `${track.url}?retry=${attempt}` : track.url;
     elements.audio.load();
     if (shouldPlay) {
       armLoadTimeout(token);
@@ -596,6 +611,7 @@ async function initPlayer() {
   elements.audio.addEventListener("playing", () => {
     clearTimeout(loadTimer);
     consecutiveFailures = 0;   // 播出声了就说明链路正常，重新计数
+    trackAttempts = 0;
     lastListenTick = performance.now();
     setStatus("playing");
     setPlayState(true);
