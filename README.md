@@ -47,6 +47,14 @@ python3 -m http.server 8080
 # 打开 http://localhost:8080/
 ```
 
+重建曲库与校验：
+
+```bash
+node scripts/build-catalog.mjs   # 从白名单重建 catalog.json
+node scripts/build-credits.mjs   # 重新生成 CREDITS.md
+node scripts/check-catalog.mjs   # 全量校验每一首是否真的可播
+```
+
 ## English
 
 ### What is this?
@@ -92,4 +100,12 @@ The author has made a good-faith effort to verify the licenses, but this is not 
 ```bash
 python3 -m http.server 8080
 # Open http://localhost:8080/
+```
+
+Rebuild and verify the catalog:
+
+```bash
+node scripts/build-catalog.mjs   # rebuild catalog.json from the allowlist
+node scripts/build-credits.mjs   # regenerate CREDITS.md
+node scripts/check-catalog.mjs   # verify every track actually plays
 ```
