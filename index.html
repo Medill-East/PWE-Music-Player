@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#101214">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="" data-i18n-content="metaDescription">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PWE Music" data-i18n-content="appName">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" href="icon-192.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <title data-i18n="appName">PWE Classical Music</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="PWE Classical Music home" data-i18n-aria-label="homeAria">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span data-i18n="appName">PWE Classical Music</span>
+      </a>
+      <div class="header-meta">
+        <p id="stats" class="stats" aria-live="polite"></p>
+        <label class="language-control" for="language-select">
+          <span class="visually-hidden" data-i18n="language">Language</span>
+          <select id="language-select" aria-label="Language" data-i18n-aria-label="language">
+            <option value="zh" data-i18n="languageZh"></option>
+            <option value="en" data-i18n="languageEn">English</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <main class="player-layout">
+      <section class="track-panel" aria-labelledby="track-title">
+        <p class="section-label" data-i18n="nowPlaying">Now playing</p>
+        <div class="track-heading">
+          <h1 id="track-title" data-i18n="preparingCatalog">Preparing the catalog</h1>
+          <p id="composer" class="composer" data-i18n="pleaseWait">Please wait</p>
+          <p id="attribution" class="attribution" hidden>
+            <span id="attribution-prefix"></span><a id="license-link" target="_blank" rel="noreferrer"></a>
+          </p>
+        </div>
+
+        <div class="timeline">
+          <input id="progress" type="range" min="0" max="1000" value="0" aria-label="Playback progress" data-i18n-aria-label="progressAria">
+          <div class="time-row" aria-hidden="true">
+            <span id="elapsed">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
+        <div class="transport" aria-label="Playback controls" data-i18n-aria-label="transportAria">
+          <button id="play-button" class="play-button" type="button" aria-label="Play" data-i18n-aria-label="play" disabled>
+            <span class="play-glyph" aria-hidden="true"></span>
+            <span id="play-label" class="visually-hidden" data-i18n="play">Play</span>
+          </button>
+          <button id="next-button" class="secondary-button" type="button" data-i18n="next" disabled>Next</button>
+        </div>
+
+        <div class="utility-controls">
+          <label class="volume-control" for="volume">
+            <span data-i18n="volume">Volume</span>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.78">
+          </label>
+          <label class="sleep-control" for="sleep-timer">
+            <span data-i18n="sleepTimer">Sleep timer</span>
+            <select id="sleep-timer">
+              <option value="0" data-i18n="off">Off</option>
+              <option value="15" data-i18n="minutes15">15 minutes</option>
+              <option value="30" data-i18n="minutes30">30 minutes</option>
+              <option value="60" data-i18n="minutes60">60 minutes</option>
+              <option value="90" data-i18n="minutes90">90 minutes</option>
+            </select>
+          </label>
+        </div>
+
+        <section id="filters" class="filters" aria-label="Track filters" data-i18n-aria-label="filtersAria">
+          <fieldset>
+            <legend data-i18n="instrumentation">Instrumentation</legend>
+            <div class="filter-options">
+              <label><input type="checkbox" name="kind" value="solo" checked><span data-i18n="solo">Solo</span></label>
+              <label><input type="checkbox" name="kind" value="chamber" checked><span data-i18n="chamber">Chamber</span></label>
+              <label><input type="checkbox" name="kind" value="orchestral"><span data-i18n="orchestral">Orchestral</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend data-i18n="instrument">Instrument</legend>
+            <div class="filter-options">
+              <label><input type="checkbox" name="instrument" value="piano" checked><span data-i18n="piano">Piano</span></label>
+              <label><input type="checkbox" name="instrument" value="guitar" checked><span data-i18n="guitar">Guitar</span></label>
+              <label><input type="checkbox" name="instrument" value="strings" checked><span data-i18n="strings">Strings</span></label>
+              <label><input type="checkbox" name="instrument" value="orchestra" checked><span data-i18n="orchestra">Orchestra</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend data-i18n="historical">Historical recordings</legend>
+            <div class="filter-options">
+              <label>
+                <input id="include-historical" type="checkbox">
+                <span data-i18n="includeHistorical">Historical recordings (78rpm, surface noise)</span>
+              </label>
+            </div>
+          </fieldset>
+        </section>
+
+        <div class="status-row">
+          <p id="status" role="status" aria-live="polite" data-i18n="initializing">Initializing</p>
+          <p id="sleep-status" aria-live="polite"></p>
+        </div>
+
+        <div class="track-actions">
+          <a id="source-link" href="https://archive.org" target="_blank" rel="noreferrer" data-i18n="sourceAndLicense" hidden>View source and license</a>
+          <button id="reset-history" class="text-button" type="button" data-i18n="resetHistory" hidden>Reset history</button>
+        </div>
+      </section>
+
+      <aside class="listening-field" aria-hidden="true">
+        <div class="record">
+          <span class="record-line record-line-one"></span>
+          <span class="record-line record-line-two"></span>
+          <span class="record-center"></span>
+        </div>
+        <p data-i18n="nonRepeating">Non-repeating catalog</p>
+      </aside>
+    </main>
+
+    <audio id="player" preload="metadata"></audio>
+    <script type="module" src="app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+      }
+    </script>
+  </body>
+</html>

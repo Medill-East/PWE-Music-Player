@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "PWE 古典轻音乐",
+  "short_name": "PWE 轻音乐",
+  "description": "长时间不重复的公版与 CC 授权古典钢琴播放器",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101214",
+  "theme_color": "#101214",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
