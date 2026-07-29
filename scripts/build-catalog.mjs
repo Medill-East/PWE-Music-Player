@@ -35,8 +35,30 @@ const COMPOSERS = [
   ["Mozart", /\bmozart\b/i],
   ["Beethoven", /\bbeethoven\b/i],
   ["Brahms", /\bbrahms\b/i],
-  ["Mendelssohn", /\bmendelssohn\b/i],
+  // 注意拼写变体：来源的曲名里同一位作曲家常有不同转写/笔误
+  // （Moussorgsky / Mussorgsky、Mendelssohnh-B. 多了个 h），
+  // 名单不覆盖就会退回 fallback，署名精度下降。
+  ["Mendelssohn", /\bmendelssohnh?\b/i],
   ["Tchaikovsky", /\b(?:tchaikovsky|chaikovsky)\b/i],
+  ["Mussorgsky", /\b(?:mo?ussorgsky|musorgsky)\b/i],
+  ["Haydn", /\bhaydn\b/i],
+  ["Janáček", /\bjan[aá][cč]ek\b/i],
+  ["Dvořák", /\bdvo[rř][aá]k\b/i],
+  ["Gershwin", /\bgershwin\b/i],
+  ["Sibelius", /\bsibelius\b/i],
+  ["Scriabin", /\b(?:scriabin|skriabin)\b/i],
+  ["Albéniz", /\balb[eé]niz\b/i],
+  ["Granados", /\bgranados\b/i],
+  ["Saint-Saëns", /\bsaint[- ]sa[eë]ns\b/i],
+  ["Massenet", /\bmassenet\b/i],
+  ["Ysaÿe", /\bysa[yÿ]e\b/i],
+  ["Taneyev", /\btaneyev\b/i],
+  ["Reynaldo Hahn", /\bhahn\b/i],
+  ["Rebecca Clarke", /\bclarke\b/i],
+  ["Buxtehude", /\bbuxtehude\b/i],
+  ["Clementi", /\bclementi\b/i],
+  ["Donizetti", /\bdonizetti\b/i],
+  ["Scott Joplin", /\bjoplin\b/i],
 ];
 
 // 人工核验白名单。新增条目前必须逐项确认下面三条，否则不要加：
@@ -110,6 +132,42 @@ export const CURATED = [
   // Satie: Vexations —— 曲内动机重复是作曲家的刻意设计，属作品本身。
   // 本播放器承诺的「不重复」指的是**曲目**不重复，与此不冲突。
   ["jamendo-169920",                               "solo",       "piano",     false, "Satie"],
+
+  // OnClassical 第二批：独奏钢琴
+  ["jamendo-175039",                               "solo",       "piano",     false, "Chopin"],
+  ["jamendo-187245",                               "solo",       "piano",     false, "Chopin"],
+  ["jamendo-187289",                               "solo",       "piano",     false, "Chopin"],
+  ["jamendo-175338",                               "solo",       "piano",     false, "Debussy"],
+  ["jamendo-175334",                               "solo",       "piano",     false, "Debussy"],
+  ["jamendo-175252",                               "solo",       "piano",     false, "Debussy"],
+  ["jamendo-178105",                               "solo",       "piano",     false, "Beethoven"],
+  ["jamendo-187249",                               "solo",       "piano",     false, "Beethoven"],
+  ["jamendo-175423",                               "solo",       "piano",     false, "Beethoven"],
+  ["jamendo-175419",                               "solo",       "piano",     false, "Beethoven"],
+  ["jamendo-175250",                               "solo",       "piano",     false, "Schubert"],
+  ["jamendo-187297",                               "solo",       "piano",     false, "Schubert"],
+  ["jamendo-187292",                               "solo",       "piano",     false, "Schubert"],
+  ["jamendo-176037",                               "solo",       "piano",     false, "Haydn"],
+  ["jamendo-167052",                               "solo",       "piano",     false, "Various"],
+  ["jamendo-167060",                               "solo",       "piano",     false, "Various"],
+
+  // 大键琴与管风琴（音色差异大，单独打标便于筛选）
+  ["jamendo-175396",                               "solo",       "harpsichord", false, "Bach"],
+  ["jamendo-175343",                               "solo",       "organ",     false, "Bach"],
+  ["jamendo-175342",                               "solo",       "organ",     false, "Various"],
+
+  // 室内乐：弦乐类
+  ["jamendo-175391",                               "chamber",    "strings",   false, "Granados"],
+  ["jamendo-187277",                               "chamber",    "strings",   false, "Beethoven"],
+  ["jamendo-187269",                               "chamber",    "strings",   false, "Beethoven"],
+  ["jamendo-175389",                               "chamber",    "strings",   false, "Grieg"],
+  ["jamendo-175426",                               "chamber",    "strings",   false, "Saint-Saëns"],
+  ["jamendo-175557",                               "chamber",    "strings",   false, "Mozart"],
+
+  // 室内乐：管乐类（长笛/单簧管/巴松与钢琴）
+  ["jamendo-178164",                               "chamber",    "wind",      false, "Schubert"],
+  ["jamendo-175218",                               "chamber",    "wind",      false, "Brahms"],
+  ["jamendo-175228",                               "chamber",    "wind",      false, "Donizetti"],
 ];
 
 function toText(value) {
@@ -185,7 +243,11 @@ export function buildTrackUrl(identifier, filename) {
 }
 
 function inferComposer(...values) {
-  const haystack = values.map(toText).join(" ");
+  // 必须先把下划线换成空格再匹配。作曲家正则用的是 \b 单词边界，
+  // 而正则里下划线属于「单词字符」——所以 "johann_sebastian_bach_toccata" 里的
+  // _bach_ 两侧没有边界，\bbach\b 匹配不上。很多来源的曲名正是这种下划线长串，
+  // 不做归一化的话整批曲目都识别不出作曲家。
+  const haystack = values.map(toText).join(" ").replace(/_+/g, " ");
   return COMPOSERS.find(([, pattern]) => pattern.test(haystack))?.[0] || "Unknown";
 }
 

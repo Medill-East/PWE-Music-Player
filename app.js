@@ -25,14 +25,14 @@ const RETRY_BACKOFF_MS = 900;
 
 const ALL_FILTERS = {
   kinds: new Set(["solo", "chamber", "orchestral"]),
-  instruments: new Set(["piano", "guitar", "strings", "orchestra"]),
+  instruments: new Set(["piano", "harpsichord", "organ", "guitar", "strings", "wind", "orchestra"]),
   includeHistorical: true,
 };
 
 export function defaultFilters() {
   return {
     kinds: new Set(["solo", "chamber"]),
-    instruments: new Set(["piano", "guitar", "strings", "orchestra"]),
+    instruments: new Set(["piano", "harpsichord", "organ", "guitar", "strings", "wind", "orchestra"]),
     includeHistorical: false,
   };
 }

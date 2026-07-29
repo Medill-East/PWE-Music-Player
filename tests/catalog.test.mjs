@@ -115,7 +115,7 @@ test("itemTracks keeps curated Unknown-composer files and applies item facets", 
 test("curated whitelist and facet summary reflect track tags", () => {
   // 只校验结构不变量，不写死条目数——曲库会持续扩充。
   const KINDS = new Set(["solo", "chamber", "orchestral"]);
-  const INSTRUMENTS = new Set(["piano", "guitar", "strings", "orchestra"]);
+  const INSTRUMENTS = new Set(["piano", "harpsichord", "organ", "guitar", "strings", "wind", "orchestra"]);
 
   assert.ok(CURATED.length > 0, "白名单不能为空");
   const identifiers = CURATED.map(([identifier]) => identifier);

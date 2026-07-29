@@ -22,13 +22,14 @@ Open and listen — no account needed. On phones, use “Add to Home Screen” t
 
 ### 曲库怎么来的
 
-全部录音来自 Internet Archive，并经过逐项人工核验，确认是公版或由权利人自行采用 Creative Commons 授权。当前曲库有 1058 首，约 53 小时，涵盖 18 位作曲家，包括：
+全部录音来自 Internet Archive，并经过逐项人工核验，确认是公版或由权利人自行采用 Creative Commons 授权。当前曲库有 1394 首，约 84 小时，涵盖 34 位作曲家，包括：
 
 - Musopen 通过众筹制作、以 CC0 释出的肖邦作品全集；
 - Kimiko Ishizaka 众筹并释出公有领域的 Open Goldberg Variations 与 Open Well-Tempered Clavier；
 - OnClassical 厂牌自行授权的专业录音（演奏者均具名），涵盖萧邦、巴赫、贝多芬、德彪西、萨蒂、格里格、莫扎特、穆索尔斯基、雅纳切克、斯科特·乔普林等；
 - Beethoven 大提琴奏鸣曲等室内乐；
-- 采用 CC 授权、由演奏者本人发布的古典吉他作品。
+- 采用 CC 授权、由演奏者本人发布的古典吉他作品；
+- 大键琴、管风琴，以及长笛/单簧管等管乐室内乐。
 
 我们**只收录权利人自身授权的录音**。任何由第三方上传、标注授权与实际权利状态不符的内容一律不收——例如商业厂牌的历史录音，即使被贴上公版标记也不采用。
 
@@ -44,7 +45,7 @@ Open and listen — no account needed. On phones, use “Add to Home Screen” t
 
 ### 怎么用
 
-打开网页即可收听，也可以通过浏览器“添加到主屏幕”作为 App 使用。播放器支持按编制、乐器筛选，并提供睡眠定时功能。
+打开网页即可收听，也可以通过浏览器“添加到主屏幕”作为 App 使用。播放器支持按编制（独奏/室内乐/管弦）与乐器（钢琴、大键琴、管风琴、吉他、弦乐、管乐）筛选，并提供睡眠定时功能。
 
 ### 免责声明
 
@@ -77,13 +78,14 @@ The “light music radio” stations in common music apps are often fixed playli
 
 ### Where does the catalog come from?
 
-Every recording comes from Internet Archive and has been checked individually to confirm it is public domain or was licensed under Creative Commons by the rights holder. The current catalog contains 1058 tracks—about 53 hours—across 18 composers, including:
+Every recording comes from Internet Archive and has been checked individually to confirm it is public domain or was licensed under Creative Commons by the rights holder. The current catalog contains 1394 tracks—about 84 hours—across 34 composers, including:
 
 - Musopen’s crowdfunded, CC0 complete Chopin works;
 - Kimiko Ishizaka’s crowdfunded, public-domain Open Goldberg Variations and Open Well-Tempered Clavier;
 - professional recordings self-licensed by the OnClassical label (performers are credited by name), covering Chopin, Bach, Beethoven, Debussy, Satie, Grieg, Mozart, Mussorgsky, Janáček and Scott Joplin;
 - chamber works such as Beethoven’s cello sonatas;
-- CC-licensed classical guitar works published by the performers themselves.
+- CC-licensed classical guitar works published by the performers themselves;
+- harpsichord, organ, and wind chamber works (flute, clarinet, bassoon).
 
 Only recordings licensed by their own rights holders are included. Anything uploaded by a third party whose stated license does not match the actual rights position is excluded — commercial-label historical recordings are left out even when someone has tagged them as public domain.
 
