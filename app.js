@@ -2,13 +2,18 @@ import { dictionaries, translate } from "./i18n.js";
 import { getLicenseLabel } from "./license.js";
 
 const DB_NAME = "pwe-music-player";
-const DB_VERSION = 1;
+// v2：旧版会因为一次加载超时就把曲目永久拉黑，升级时清空这份黑名单，
+// 把被误判的曲目放回曲库。播放历史（played）不动。
+const DB_VERSION = 2;
 const PLAYED_STORE = "played";
 const BAD_STORE = "bad";
 const FILTERS_STORAGE_KEY = "pwe-music-player-filters";
 const LANGUAGE_STORAGE_KEY = "pwe-music-player-language";
 const LISTEN_THRESHOLD_SECONDS = 30;
-const LOAD_TIMEOUT_MS = 20_000;
+// archive.org 冷启动读取可能很慢，超时给足，否则会把正常曲目误判为坏曲目。
+const LOAD_TIMEOUT_MS = 45_000;
+// 连续失败达到这个数就停止自动跳过：网络出问题时不能让播放器一路烧穿整个曲库。
+const MAX_CONSECUTIVE_FAILURES = 3;
 
 const ALL_FILTERS = {
   kinds: new Set(["solo", "chamber", "orchestral"]),
@@ -73,10 +78,14 @@ export function getPoolStatus(tracks, playedIds, badIds, filters) {
 function openDatabase() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
+    request.onupgradeneeded = (event) => {
       const database = request.result;
       if (!database.objectStoreNames.contains(PLAYED_STORE)) database.createObjectStore(PLAYED_STORE);
       if (!database.objectStoreNames.contains(BAD_STORE)) database.createObjectStore(BAD_STORE);
+      // 从 v1 升上来时清掉旧的坏曲目黑名单——那份名单里多是被超时误判的正常曲目。
+      if (event.oldVersion > 0 && event.oldVersion < 2) {
+        request.transaction.objectStore(BAD_STORE).clear();
+      }
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -152,6 +161,7 @@ async function initPlayer() {
   let loadTimer = null;
   let loadToken = 0;
   let failureInProgress = false;
+  let consecutiveFailures = 0;
   let sleepTimer = null;
   let sleepTicker = null;
   let sleepDeadline = 0;
@@ -378,13 +388,28 @@ async function initPlayer() {
     setStatus("filteredEmptyStatus", "error");
   }
 
-  async function handlePlaybackFailure() {
+  // permanent=true 表示确定是这个文件本身的问题（媒体解码失败等），才永久拉黑；
+  // 超时只说明「这次没加载出来」，可能只是网络慢，不能据此永久烧掉一首曲子。
+  async function handlePlaybackFailure({ permanent = false } = {}) {
     if (!currentTrack || failureInProgress) return;
     failureInProgress = true;
     const failed = currentTrack;
     try {
-      bad.add(failed.id);
-      await writeKey(database, BAD_STORE, failed.id);
+      if (permanent) {
+        bad.add(failed.id);
+        await writeKey(database, BAD_STORE, failed.id);
+      }
+
+      consecutiveFailures += 1;
+      if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+        // 连续失败多半是网络/上游出问题，不是曲目问题。停在这里，
+        // 否则自动跳过会一路烧穿曲库，表现为「曲目飞快地自己往下跳」。
+        clearTimeout(loadTimer);
+        elements.audio.pause();
+        setStatus("networkTrouble", "error");
+        return;
+      }
+
       setStatus("loadFailedSkipping", "error", { title: failed.title });
       await advance(true);
     } finally {
@@ -396,7 +421,7 @@ async function initPlayer() {
     clearTimeout(loadTimer);
     loadTimer = setTimeout(() => {
       if (token === loadToken && elements.audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
-        void handlePlaybackFailure();
+        void handlePlaybackFailure({ permanent: false });
       }
     }, LOAD_TIMEOUT_MS);
   }
@@ -570,6 +595,7 @@ async function initPlayer() {
 
   elements.audio.addEventListener("playing", () => {
     clearTimeout(loadTimer);
+    consecutiveFailures = 0;   // 播出声了就说明链路正常，重新计数
     lastListenTick = performance.now();
     setStatus("playing");
     setPlayState(true);
