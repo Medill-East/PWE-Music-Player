@@ -55,6 +55,17 @@ export function readableSource(track) {
   return String(identifier || "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
+// 「查看来源」链接。曲库现在有两个源，不能再写死 archive.org
+// ——Pandora 曲目的 source 形如 "pandora/piano/Goldstein"，拼成 archive.org
+// 的 details 链接会得到一个 404。
+export function trackSourceUrl(track) {
+  const source = String(track?.source || "");
+  if (source.startsWith("pandora/")) {
+    return `https://www.ibiblio.org/pandora/mp3/${source.slice("pandora/".length)}/`;
+  }
+  return `https://archive.org/details/${encodeURIComponent(source)}`;
+}
+
 export function matchesFilter(track, filters) {
   return filters.kinds.has(track.kind)
     && filters.instruments.has(track.instrument)
@@ -472,10 +483,25 @@ async function initPlayer() {
     emptyView = "";
     listenedSeconds = 0;
     lastListenTick = performance.now();
+
+    // ⚠️ 顺序很重要：先接上音源并起播，界面更新放到后面。
+    // iOS 只在音频**正在播放**时保持页面存活；一首放完到系统冻结 JS 之间只有很短的
+    // 窗口。若先做十几处 DOM 更新再 play()，锁屏状态下常常还没轮到 play() 页面就被
+    // 冻住了，表现就是「当前这首能放完，但不会自动续下一首」。
+    // 重试时加一个无意义的查询参数：archive.org 会忽略它，但浏览器会因此
+    // 重新发起请求并重新走 302，多半会落到另一个存储节点上。
+    elements.audio.src = attempt > 0 ? `${track.url}?retry=${attempt}` : track.url;
+    elements.audio.load();
+    let playPromise;
+    if (shouldPlay) {
+      armLoadTimeout(token);
+      playPromise = elements.audio.play();          // 同步发起，先不 await
+    }
+
     elements.title.textContent = track.title;
     elements.composer.textContent = track.composer;
     renderAttribution();
-    elements.source.href = `https://archive.org/details/${encodeURIComponent(track.source)}`;
+    elements.source.href = trackSourceUrl(track);
     elements.source.hidden = false;
     elements.reset.hidden = true;
     elements.play.disabled = false;
@@ -485,14 +511,10 @@ async function initPlayer() {
     elements.duration.textContent = formatTime(track.duration);
     setStatus("connectingArchive");
     updateMediaSession(track);
-    // 重试时加一个无意义的查询参数：archive.org 会忽略它，但浏览器会因此
-    // 重新发起请求并重新走 302，多半会落到另一个存储节点上。
-    elements.audio.src = attempt > 0 ? `${track.url}?retry=${attempt}` : track.url;
-    elements.audio.load();
-    if (shouldPlay) {
-      armLoadTimeout(token);
+
+    if (playPromise) {
       try {
-        await elements.audio.play();
+        await playPromise;
       } catch (error) {
         if (error.name !== "AbortError") setStatus("tapToContinue");
       }
@@ -500,13 +522,9 @@ async function initPlayer() {
   }
 
   async function advance(shouldPlay = true) {
+    // 选曲要在拆预加载器**之前**：拆除会调用第二个 audio 元素的 load()，
+    // 而 iOS 在切歌这个节骨眼上对多媒体元素操作很敏感。先把要放的曲子定下来。
     const warmed = queuedTrack;
-    if (preloader) {
-      preloader.removeAttribute("src");
-      preloader.load();
-      preloader.remove();
-    }
-    preloader = null;
     queuedTrack = null;
     const track = warmed
       && matchesFilter(warmed, activeFilters)
@@ -514,6 +532,7 @@ async function initPlayer() {
       && !bad.has(warmed.id)
       ? warmed
       : selectTrack();
+    // 预加载器的清理不影响选曲结果，挪到播放起来之后做（见本函数末尾）。
     if (!track) {
       if (getPoolStatus(catalog.tracks, played, bad, activeFilters) === "filtered-empty") {
         showFilteredEmpty();
@@ -532,9 +551,12 @@ async function initPlayer() {
         return;
       }
       showExhausted();
+      clearPreloader();
       return;
     }
-    await loadTrack(track, shouldPlay);
+    const loading = loadTrack(track, shouldPlay);
+    clearPreloader();          // 起播之后再拆，避免占用切歌的关键窗口
+    await loading;
   }
 
   function cancelSleepTimer(resetSelect = false) {
