@@ -549,3 +549,10 @@ select {
     border-color: var(--accent);
   }
 }
+
+.volume-note {
+  margin: 0;
+  color: var(--quiet);
+  font-size: 12px;
+  line-height: 1.5;
+}

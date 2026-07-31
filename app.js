@@ -55,6 +55,21 @@ export function readableSource(track) {
   return String(identifier || "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
+// iOS Safari 的 audio.volume 是**只读**的：网页无权改音量，只能用设备的物理音量键。
+// 赋值不会报错，只是静默无效 —— 所以必须写入后读回来验证，不能靠 UA 嗅探。
+export function canControlVolume(audio) {
+  try {
+    const before = audio.volume;
+    const probe = before > 0.5 ? 0.25 : 0.75;
+    audio.volume = probe;
+    const changed = Math.abs(audio.volume - probe) < 0.01;
+    audio.volume = before;
+    return changed;
+  } catch {
+    return false;
+  }
+}
+
 // 「查看来源」链接。曲库现在有两个源，不能再写死 archive.org
 // ——Pandora 曲目的 source 形如 "pandora/piano/Goldstein"，拼成 archive.org
 // 的 details 链接会得到一个 404。
@@ -200,6 +215,8 @@ async function initPlayer() {
   let sleepTicker = null;
   let sleepDeadline = 0;
   let isFading = false;
+  let fadeTimer = null;
+  let volumeControlSupported = true;
   let activeFilters = defaultFilters();
   let lastStatus = { key: "initializing", values: {}, kind: "" };
   let emptyView = "";
@@ -562,6 +579,15 @@ async function initPlayer() {
   function cancelSleepTimer(resetSelect = false) {
     clearTimeout(sleepTimer);
     clearInterval(sleepTicker);
+    // 淡出过程也必须一并取消并复位音量。漏掉这里的话，淡出途中改动睡眠定时会让
+    // isFading 永久停在 true，而音量滑块被 if (!isFading) 挡着 —— 结果是音量控制
+    // 直到刷新页面前一直失效。
+    if (fadeTimer) {
+      clearInterval(fadeTimer);
+      fadeTimer = null;
+      elements.audio.volume = Number(elements.volume.value);
+      isFading = false;
+    }
     sleepTimer = null;
     sleepTicker = null;
     sleepDeadline = 0;
@@ -577,16 +603,24 @@ async function initPlayer() {
   }
 
   function fadeOutAndPause() {
-    isFading = true;
     const originalVolume = Number(elements.volume.value);
     const steps = 20;
     let step = 0;
     elements.sleepStatus.textContent = t("fadingOut");
-    const fade = setInterval(() => {
+    // 设备不支持程序化调音量时（iOS）淡出无效，直接停播即可。
+    if (!volumeControlSupported) {
+      elements.audio.pause();
+      cancelSleepTimer(true);
+      setStatus("sleepStopped");
+      return;
+    }
+    isFading = true;
+    fadeTimer = setInterval(() => {
       step += 1;
       elements.audio.volume = originalVolume * (1 - step / steps);
       if (step >= steps) {
-        clearInterval(fade);
+        clearInterval(fadeTimer);
+        fadeTimer = null;
         elements.audio.pause();
         elements.audio.volume = originalVolume;
         isFading = false;
@@ -727,7 +761,21 @@ async function initPlayer() {
       readKeys(database, BAD_STORE),
     ]);
     updateStats();
-    elements.audio.volume = Number(elements.volume.value);
+    volumeControlSupported = canControlVolume(elements.audio);
+    if (volumeControlSupported) {
+      elements.audio.volume = Number(elements.volume.value);
+    } else {
+      // iOS：滑块拖了也不会有任何反应，与其让人对着死控件较劲，不如换成一句说明。
+      const control = elements.volume.closest(".volume-control") || elements.volume.parentElement;
+      if (control) {
+        control.innerHTML = "";
+        const note = document.createElement("p");
+        note.className = "volume-note";
+        note.dataset.i18n = "volumeDeviceOnly";
+        note.textContent = t("volumeDeviceOnly");
+        control.append(note);
+      }
+    }
     await advance(false);
   } catch (error) {
     emptyView = "error";
