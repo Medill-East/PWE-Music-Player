@@ -70,6 +70,14 @@ export function canControlVolume(audio) {
   }
 }
 
+// 页面重新可见时该不该自动续播。
+// 关键是区分「用户自己按的暂停」和「意外中断」——前者绝不能擅自恢复，
+// 那是骚扰；后者（锁屏期间网络抖动，而 iOS 冻结了页面导致重试逻辑没机会跑）
+// 才是我们要救的场景。
+export function shouldResumePlayback({ visible, intendedPlaying, hasTrack, paused }) {
+  return Boolean(visible && intendedPlaying && hasTrack && paused);
+}
+
 // 「查看来源」链接。曲库现在有两个源，不能再写死 archive.org
 // ——Pandora 曲目的 source 形如 "pandora/piano/Goldstein"，拼成 archive.org
 // 的 details 链接会得到一个 404。
@@ -217,6 +225,9 @@ async function initPlayer() {
   let isFading = false;
   let fadeTimer = null;
   let volumeControlSupported = true;
+  // 用户「是否想让它响着」——与 audio.paused 不同：网络中断也会 paused，
+  // 但那不是用户的意图。恢复逻辑只认这个标志。
+  let intendedPlaying = false;
   let activeFilters = defaultFilters();
   let lastStatus = { key: "initializing", values: {}, kind: "" };
   let emptyView = "";
@@ -414,6 +425,7 @@ async function initPlayer() {
   }
 
   function showExhausted() {
+    intendedPlaying = false;
     stopListeningClock();
     elements.audio.pause();
     currentTrack = null;
@@ -609,6 +621,7 @@ async function initPlayer() {
     elements.sleepStatus.textContent = t("fadingOut");
     // 设备不支持程序化调音量时（iOS）淡出无效，直接停播即可。
     if (!volumeControlSupported) {
+      intendedPlaying = false;
       elements.audio.pause();
       cancelSleepTimer(true);
       setStatus("sleepStopped");
@@ -621,6 +634,7 @@ async function initPlayer() {
       if (step >= steps) {
         clearInterval(fadeTimer);
         fadeTimer = null;
+        intendedPlaying = false;
         elements.audio.pause();
         elements.audio.volume = originalVolume;
         isFading = false;
@@ -633,6 +647,7 @@ async function initPlayer() {
   elements.play.addEventListener("click", async () => {
     if (!currentTrack) return;
     if (elements.audio.paused) {
+      intendedPlaying = true;
       armLoadTimeout();
       try {
         await elements.audio.play();
@@ -641,6 +656,7 @@ async function initPlayer() {
         if (error.name !== "AbortError") setStatus("playFailed", "error");
       }
     } else {
+      intendedPlaying = false;      // 用户主动暂停，别再自动续
       elements.audio.pause();
     }
   });
@@ -695,12 +711,36 @@ async function initPlayer() {
     clearTimeout(loadTimer);
     consecutiveFailures = 0;   // 播出声了就说明链路正常，重新计数
     trackAttempts = 0;
+    intendedPlaying = true;
+    // 一起播就立刻预热下一首，别等播到 80%。
+    // 锁屏时 iOS 会冻结页面，timeupdate 随之停摆，80% 那个时机很可能根本不会到来；
+    // 于是切歌瞬间才临时选曲、临时发请求，而 archive.org 首字节实测能到 8.7 秒
+    // ——恰好在最不能出错的时刻走了最慢的路径。提前预热能把这段延迟挪到有余裕的时候。
+    primeNextTrack();
     lastListenTick = performance.now();
     setStatus("playing");
     setPlayState(true);
     startListeningClock();
   });
   elements.audio.addEventListener("pause", () => setPlayState(false));
+
+  // 锁屏期间若网络抖动把播放打断，iOS 已冻结页面，重试逻辑根本没机会跑，
+  // 结果就是「回头一看已经不响了」。页面重新可见时补一次恢复：
+  // 只在「用户本来就想听」且不是用户自己按的暂停时才续播。
+  document.addEventListener("visibilitychange", () => {
+    if (!shouldResumePlayback({
+      visible: document.visibilityState === "visible",
+      intendedPlaying,
+      hasTrack: Boolean(currentTrack),
+      paused: elements.audio.paused,
+    })) return;
+    consecutiveFailures = 0;                 // 给它一次干净的重试机会
+    trackAttempts = 0;
+    void elements.audio.play().catch(() => {
+      // 连接可能已经彻底失效，重新走一遍加载而不是干等
+      void loadTrack(currentTrack, true);
+    });
+  });
   elements.audio.addEventListener("canplay", () => {
     clearTimeout(loadTimer);
     if (elements.audio.paused) setStatus("readyToPlay");
@@ -711,7 +751,7 @@ async function initPlayer() {
     elements.progress.value = String(Math.round(elements.audio.currentTime / duration * 1000));
     elements.elapsed.textContent = formatTime(elements.audio.currentTime);
     elements.duration.textContent = formatTime(duration);
-    if (elements.audio.currentTime / duration >= 0.8) primeNextTrack();
+    if (elements.audio.currentTime / duration >= 0.8) primeNextTrack();   // 兜底：起播时若没预热成功，这里补一次
   });
   elements.audio.addEventListener("ended", () => void advance(true));
   elements.audio.addEventListener("error", () => void handlePlaybackFailure());

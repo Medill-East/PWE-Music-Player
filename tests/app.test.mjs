@@ -8,6 +8,7 @@ import {
   matchesFilter,
   canControlVolume,
   trackSourceUrl,
+  shouldResumePlayback,
 } from "../app.js";
 import { getLicenseLabel } from "../license.js";
 
@@ -146,4 +147,23 @@ test("trackSourceUrl points each source at its own host", () => {
     trackSourceUrl({ source: "pandora/historical_instruments/Flemish_harpsichord" }),
     "https://www.ibiblio.org/pandora/mp3/historical_instruments/Flemish_harpsichord/",
   );
+});
+
+test("shouldResumePlayback only recovers from unintended stops", () => {
+  const base = { visible: true, intendedPlaying: true, hasTrack: true, paused: true };
+
+  // 要救的场景：锁屏期间被网络打断，iOS 冻结了页面，重试逻辑没机会跑
+  assert.equal(shouldResumePlayback(base), true);
+
+  // 用户自己按的暂停，绝不能擅自恢复
+  assert.equal(shouldResumePlayback({ ...base, intendedPlaying: false }), false);
+
+  // 页面还没回到前台就别动
+  assert.equal(shouldResumePlayback({ ...base, visible: false }), false);
+
+  // 本来就在放，不需要插手
+  assert.equal(shouldResumePlayback({ ...base, paused: false }), false);
+
+  // 没有当前曲目（曲库耗尽/筛选为空）时无从恢复
+  assert.equal(shouldResumePlayback({ ...base, hasTrack: false }), false);
 });
