@@ -550,9 +550,7 @@ select {
   }
 }
 
-.volume-note {
-  margin: 0;
-  color: var(--quiet);
-  font-size: 12px;
-  line-height: 1.5;
+/* 音量控件被隐藏时（iOS 上 volume 只读），剩下的睡眠定时不该被压在半栏里 */
+.utility-controls[data-single] {
+  grid-template-columns: minmax(150px, 0.72fr);
 }

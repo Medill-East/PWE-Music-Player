@@ -805,15 +805,14 @@ async function initPlayer() {
     if (volumeControlSupported) {
       elements.audio.volume = Number(elements.volume.value);
     } else {
-      // iOS：滑块拖了也不会有任何反应，与其让人对着死控件较劲，不如换成一句说明。
+      // iOS 上 audio.volume 只读，滑块拖了毫无反应。
+      // 不做任何提示——用设备音量键是这类设备上的常识，写一行说明只是噪音。
       const control = elements.volume.closest(".volume-control") || elements.volume.parentElement;
       if (control) {
-        control.innerHTML = "";
-        const note = document.createElement("p");
-        note.className = "volume-note";
-        note.dataset.i18n = "volumeDeviceOnly";
-        note.textContent = t("volumeDeviceOnly");
-        control.append(note);
+        control.hidden = true;
+        elements.filters.closest("main")
+          ?.querySelector(".utility-controls")
+          ?.setAttribute("data-single", "");
       }
     }
     await advance(false);
