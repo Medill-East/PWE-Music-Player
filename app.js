@@ -95,19 +95,38 @@ export function matchesFilter(track, filters) {
     && (filters.includeHistorical || !track.historical);
 }
 
+export function trackHost(track) {
+  try {
+    return new URL(track.url).hostname;
+  } catch {
+    return "";
+  }
+}
+
+// 曲库横跨两个主机。其中一个不通时（archive.org 在部分地区时通时断），
+// 不该让整个播放器陪着一起瘫——优先挑还健康的那个主机上的曲目，
+// 用户就不用靠不停点「下一首」去碰运气。
+// 全都不健康时照常返回，让重试逻辑去处理，而不是假装曲库空了。
 export function chooseNextTrack(
   tracks,
   playedIds,
   badIds,
   random = Math.random,
   filters = ALL_FILTERS,
+  unhealthyHosts = new Set(),
 ) {
   const pool = tracks
     .filter((track) => matchesFilter(track, filters))
     .filter((track) => !playedIds.has(track.id) && !badIds.has(track.id));
   if (pool.length === 0) return null;
-  const index = Math.min(pool.length - 1, Math.floor(random() * pool.length));
-  return pool[index];
+
+  const healthy = unhealthyHosts.size
+    ? pool.filter((track) => !unhealthyHosts.has(trackHost(track)))
+    : pool;
+  const usable = healthy.length ? healthy : pool;
+
+  const index = Math.min(usable.length - 1, Math.floor(random() * usable.length));
+  return usable[index];
 }
 
 export function getPoolStatus(tracks, playedIds, badIds, filters) {
@@ -224,6 +243,10 @@ async function initPlayer() {
   let loadToken = 0;
   let failureInProgress = false;
   let consecutiveFailures = 0;
+  // 每个音频主机的连续失败次数。曲库横跨 archive.org 与 ibiblio.org，
+  // 其中一个不通时要能自动绕开，而不是让用户靠点「下一首」碰运气。
+  const hostFailures = new Map();
+  const HOST_UNHEALTHY_AT = 3;
   let trackAttempts = 0;
   let lastFailureDetail = "";
   let sleepTimer = null;
@@ -354,8 +377,18 @@ async function initPlayer() {
     return exclusions;
   }
 
+  function unhealthyHosts() {
+    const out = new Set();
+    for (const [host, misses] of hostFailures) {
+      if (misses >= HOST_UNHEALTHY_AT) out.add(host);
+    }
+    return out;
+  }
+
   function selectTrack() {
-    return chooseNextTrack(catalog.tracks, availableExclusions(), bad, Math.random, activeFilters);
+    return chooseNextTrack(
+      catalog.tracks, availableExclusions(), bad, Math.random, activeFilters, unhealthyHosts(),
+    );
   }
 
   function updateMediaSession(track) {
@@ -484,6 +517,8 @@ async function initPlayer() {
         await writeKey(database, BAD_STORE, failed.id);
       }
 
+      const host = trackHost(failed);
+      if (host) hostFailures.set(host, (hostFailures.get(host) || 0) + 1);
       consecutiveFailures += 1;
       if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
         lastFailureDetail = describeMediaError(elements.audio);
@@ -717,6 +752,7 @@ async function initPlayer() {
   elements.audio.addEventListener("playing", () => {
     clearTimeout(loadTimer);
     consecutiveFailures = 0;   // 播出声了就说明链路正常，重新计数
+    if (currentTrack) hostFailures.delete(trackHost(currentTrack));
     trackAttempts = 0;
     intendedPlaying = true;
     // 一起播就立刻预热下一首，别等播到 80%。

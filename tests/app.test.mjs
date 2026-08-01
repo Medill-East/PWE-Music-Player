@@ -10,6 +10,7 @@ import {
   trackSourceUrl,
   shouldResumePlayback,
   isFileLevelMediaError,
+  trackHost,
 } from "../app.js";
 import { getLicenseLabel } from "../license.js";
 
@@ -178,4 +179,30 @@ test("only file-level media errors are allowed to blacklist a track", () => {
   assert.equal(isFileLevelMediaError({ code: 2 }), false, "NETWORK 不能拉黑");
   assert.equal(isFileLevelMediaError({ code: 1 }), false, "ABORTED 不能拉黑");
   assert.equal(isFileLevelMediaError(null), false, "超时等无 MediaError 的情况不能拉黑");
+});
+
+test("chooseNextTrack routes around an unhealthy host", () => {
+  const tracks = [
+    { id: "a1", url: "https://archive.org/download/x/1.mp3", kind: "solo", instrument: "piano", historical: false },
+    { id: "a2", url: "https://archive.org/download/x/2.mp3", kind: "solo", instrument: "piano", historical: false },
+    { id: "p1", url: "https://www.ibiblio.org/pandora/mp3/piano/1.mp3", kind: "solo", instrument: "piano", historical: false },
+  ];
+  const none = new Set();
+  const pickAll = () => chooseNextTrack(tracks, none, none, () => 0, undefined, new Set(["archive.org"]));
+
+  // archive.org 不通时，应稳定挑到 ibiblio 那首
+  for (let i = 0; i < 5; i += 1) assert.equal(pickAll().id, "p1");
+
+  // 两个主机都不通时不能假装曲库空了——照常返回，交给重试逻辑
+  const allDown = new Set(["archive.org", "www.ibiblio.org"]);
+  assert.ok(chooseNextTrack(tracks, none, none, () => 0, undefined, allDown), "全部不健康时仍要返回曲目");
+
+  // 没有不健康主机时行为不变
+  assert.equal(chooseNextTrack(tracks, none, none, () => 0).id, "a1");
+});
+
+test("trackHost extracts the host and tolerates a broken url", () => {
+  assert.equal(trackHost({ url: "https://archive.org/download/x/1.mp3" }), "archive.org");
+  assert.equal(trackHost({ url: "https://www.ibiblio.org/pandora/mp3/a.mp3" }), "www.ibiblio.org");
+  assert.equal(trackHost({ url: "not-a-url" }), "");
 });
