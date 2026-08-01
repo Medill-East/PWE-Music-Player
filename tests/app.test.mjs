@@ -6,7 +6,7 @@ import {
   defaultFilters,
   getPoolStatus,
   matchesFilter,
-  canControlVolume,
+  canFadeVolume,
   trackSourceUrl,
   shouldResumePlayback,
   isFileLevelMediaError,
@@ -125,18 +125,18 @@ test("license URLs are reduced to readable attribution labels", () => {
   );
 });
 
-test("canControlVolume detects read-only volume without clobbering it", () => {
-  // iOS Safari 的 volume 是只读的：赋值不报错，只是静默无效。
+test("canFadeVolume detects read-only volume without clobbering it", () => {
+  // 淡出需要能改音量。iOS Safari 的 volume 是只读的：赋值不报错，只是静默无效，
   // 只能写入后读回来判断，不能靠 UA 嗅探。
   const writable = { volume: 0.78 };
-  assert.equal(canControlVolume(writable), true);
+  assert.equal(canFadeVolume(writable), true);
   assert.equal(writable.volume, 0.78, "探测不能改变原有音量");
 
   const readOnly = { _v: 1, get volume() { return this._v; }, set volume(_x) {} };
-  assert.equal(canControlVolume(readOnly), false);
+  assert.equal(canFadeVolume(readOnly), false);
 
   const throws = { get volume() { throw new Error("unavailable"); } };
-  assert.equal(canControlVolume(throws), false, "取值抛异常时要安全地判为不支持");
+  assert.equal(canFadeVolume(throws), false, "取值抛异常时要安全地判为不支持");
 });
 
 test("trackSourceUrl points each source at its own host", () => {

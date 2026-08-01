@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwe-music-player-shell-v13";
+const CACHE_NAME = "pwe-music-player-shell-v14";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,7 +13,15 @@ const APP_SHELL = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
+  // 必须带 cache: "reload"。cache.addAll() 默认允许走浏览器的 HTTP 缓存，
+  // 于是即使换了 CACHE_NAME，也可能把**旧文件**装进新缓存桶——
+  // 结果是新的 index.html 配上旧的 app.js，前端因为引用了已删除的元素直接起不来，
+  // 而且没有任何报错，只停在「正在准备曲库」。必须强制走网络。
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(
+      APP_SHELL.map((url) => new Request(url, { cache: "reload" })),
+    )),
+  );
   self.skipWaiting();
 });
 

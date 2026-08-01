@@ -22,6 +22,10 @@ const MAX_CONSECUTIVE_FAILURES = 3;
 // ——连接刚被 RST 时立刻重连通常还是会被 RST。
 const MAX_TRACK_ATTEMPTS = 5;
 const RETRY_BACKOFF_MS = 900;
+// 上游整体不可用后的自动恢复：30 秒起，每轮翻倍，最长 5 分钟。
+// 目的是让「放着不管」也能在上游恢复后自己接上，而不是停在那儿等人来按播放。
+const RECOVERY_BASE_MS = 30_000;
+const RECOVERY_MAX_MS = 300_000;
 
 const ALL_FILTERS = {
   kinds: new Set(["solo", "chamber", "orchestral"]),
@@ -55,9 +59,9 @@ export function readableSource(track) {
   return String(identifier || "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
-// iOS Safari 的 audio.volume 是**只读**的：网页无权改音量，只能用设备的物理音量键。
-// 赋值不会报错，只是静默无效 —— 所以必须写入后读回来验证，不能靠 UA 嗅探。
-export function canControlVolume(audio) {
+// 淡出需要能改音量。iOS Safari 的 audio.volume 是只读的——赋值不报错，只是静默无效，
+// 所以必须写入后读回来验证，不能靠 UA 嗅探。不支持时睡眠定时直接停播。
+export function canFadeVolume(audio) {
   try {
     const before = audio.volume;
     const probe = before > 0.5 ? 0.25 : 0.75;
@@ -215,7 +219,6 @@ async function initPlayer() {
     play: document.querySelector("#play-button"),
     playLabel: document.querySelector("#play-label"),
     next: document.querySelector("#next-button"),
-    volume: document.querySelector("#volume"),
     sleep: document.querySelector("#sleep-timer"),
     sleepStatus: document.querySelector("#sleep-status"),
     progress: document.querySelector("#progress"),
@@ -254,7 +257,9 @@ async function initPlayer() {
   let sleepDeadline = 0;
   let isFading = false;
   let fadeTimer = null;
-  let volumeControlSupported = true;
+  let canFade = true;
+  let recoveryTimer = null;
+  let recoveryRound = 0;
   // 用户「是否想让它响着」——与 audio.paused 不同：网络中断也会 paused，
   // 但那不是用户的意图。恢复逻辑只认这个标志。
   let intendedPlaying = false;
@@ -375,6 +380,30 @@ async function initPlayer() {
     const exclusions = new Set(played);
     if (currentTrack) exclusions.add(currentTrack.id);
     return exclusions;
+  }
+
+  function cancelAutoRecovery() {
+    clearTimeout(recoveryTimer);
+    recoveryTimer = null;
+  }
+
+  // 上游断了之后隔一阵自己重试，而不是把「继续听」推回给用户手动按播放。
+  // 每失败一轮就等更久（30s → 60s → 120s，上限 5 分钟），避免在长时间中断时
+  // 反复空转打上游；只要用户还想听（intendedPlaying），就一直守着。
+  function scheduleAutoRecovery() {
+    cancelAutoRecovery();
+    if (!intendedPlaying) return;
+    const delay = Math.min(RECOVERY_BASE_MS * (2 ** recoveryRound), RECOVERY_MAX_MS);
+    recoveryRound += 1;
+    recoveryTimer = setTimeout(() => {
+      recoveryTimer = null;
+      if (!intendedPlaying || !currentTrack) return;
+      consecutiveFailures = 0;
+      trackAttempts = 0;
+      hostFailures.clear();          // 给所有主机一次公平的重新尝试
+      setStatus("retryingAfterOutage");
+      void loadTrack(currentTrack, true);
+    }, delay);
   }
 
   function unhealthyHosts() {
@@ -527,6 +556,9 @@ async function initPlayer() {
         clearTimeout(loadTimer);
         elements.audio.pause();
         setStatus("networkTrouble", "error", { detail: lastFailureDetail });
+        // 上游中断多是暂时的，别把「继续听」这件事推回给用户。
+        // 隔一段时间自己再试一次；用户手动操作会取消这个等待。
+        scheduleAutoRecovery();
         return;
       }
 
@@ -639,7 +671,6 @@ async function initPlayer() {
     if (fadeTimer) {
       clearInterval(fadeTimer);
       fadeTimer = null;
-      elements.audio.volume = Number(elements.volume.value);
       isFading = false;
     }
     sleepTimer = null;
@@ -657,12 +688,12 @@ async function initPlayer() {
   }
 
   function fadeOutAndPause() {
-    const originalVolume = Number(elements.volume.value);
+    const originalVolume = elements.audio.volume;
     const steps = 20;
     let step = 0;
     elements.sleepStatus.textContent = t("fadingOut");
     // 设备不支持程序化调音量时（iOS）淡出无效，直接停播即可。
-    if (!volumeControlSupported) {
+    if (!canFade) {
       intendedPlaying = false;
       elements.audio.pause();
       cancelSleepTimer(true);
@@ -699,14 +730,12 @@ async function initPlayer() {
       }
     } else {
       intendedPlaying = false;      // 用户主动暂停，别再自动续
+      cancelAutoRecovery();
       elements.audio.pause();
     }
   });
 
-  elements.next.addEventListener("click", () => void advance(true));
-  elements.volume.addEventListener("input", () => {
-    if (!isFading) elements.audio.volume = Number(elements.volume.value);
-  });
+  elements.next.addEventListener("click", () => { cancelAutoRecovery(); void advance(true); });
   elements.progress.addEventListener("input", () => {
     if (Number.isFinite(elements.audio.duration)) {
       elements.audio.currentTime = Number(elements.progress.value) * elements.audio.duration / 1000;
@@ -753,6 +782,8 @@ async function initPlayer() {
     clearTimeout(loadTimer);
     consecutiveFailures = 0;   // 播出声了就说明链路正常，重新计数
     if (currentTrack) hostFailures.delete(trackHost(currentTrack));
+    recoveryRound = 0;
+    cancelAutoRecovery();
     trackAttempts = 0;
     intendedPlaying = true;
     // 一起播就立刻预热下一首，别等播到 80%。
@@ -850,20 +881,9 @@ async function initPlayer() {
       readKeys(database, BAD_STORE),
     ]);
     updateStats();
-    volumeControlSupported = canControlVolume(elements.audio);
-    if (volumeControlSupported) {
-      elements.audio.volume = Number(elements.volume.value);
-    } else {
-      // iOS 上 audio.volume 只读，滑块拖了毫无反应。
-      // 不做任何提示——用设备音量键是这类设备上的常识，写一行说明只是噪音。
-      const control = elements.volume.closest(".volume-control") || elements.volume.parentElement;
-      if (control) {
-        control.hidden = true;
-        elements.filters.closest("main")
-          ?.querySelector(".utility-controls")
-          ?.setAttribute("data-single", "");
-      }
-    }
+    // 不提供应用内音量控件：显示一个不与系统音量同步的滑块只是半真半假的信息，
+    // 交给设备自身的音量控制更诚实。这里只探测淡出能力。
+    canFade = canFadeVolume(elements.audio);
     await advance(false);
   } catch (error) {
     emptyView = "error";
@@ -876,4 +896,9 @@ async function initPlayer() {
   }
 }
 
-if (typeof document !== "undefined") void initPlayer();
+if (typeof document !== "undefined") {
+  // 别让初始化失败变成一片沉默的白屏：把原因说出来比停在「正在准备曲库」有用。
+  initPlayer().catch((error) => {
+    console.error("initPlayer failed:", error);
+  });
+}
