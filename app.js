@@ -158,6 +158,13 @@ function clearStore(database, storeName) {
   });
 }
 
+// 这次失败是「文件坏了」还是「网络不行」？只有前者该把曲目永久拉黑。
+//   MEDIA_ERR_DECODE(3) / MEDIA_ERR_SRC_NOT_SUPPORTED(4) —— 拿到了数据但解不开，是文件问题
+//   MEDIA_ERR_NETWORK(2) / MEDIA_ERR_ABORTED(1)          —— 链路问题，换个时间多半就好了
+export function isFileLevelMediaError(mediaError) {
+  return mediaError?.code === 3 || mediaError?.code === 4;
+}
+
 // 把失败原因说清楚。笼统的「加载失败」无法定位问题——
 // MediaError 的四种类型指向完全不同的原因（网络 / 解码 / 格式 / 中止）。
 export function describeMediaError(audio) {
@@ -754,7 +761,13 @@ async function initPlayer() {
     if (elements.audio.currentTime / duration >= 0.8) primeNextTrack();   // 兜底：起播时若没预热成功，这里补一次
   });
   elements.audio.addEventListener("ended", () => void advance(true));
-  elements.audio.addEventListener("error", () => void handlePlaybackFailure());
+  // 只有「文件本身有问题」才配拉黑。网络类错误必须放过——
+  // 实测使用者的日志里同时出现 ERR_CONNECTION_CLOSED、ERR_HTTP2_PROTOCOL_ERROR、
+  // ERR_CONTENT_LENGTH_MISMATCH、HTTP 500，且横跨两个互不相干的主机，
+  // 那是链路问题。若照单拉黑，网络差的用户会被一点点吃掉整个曲库。
+  elements.audio.addEventListener("error", () => {
+    void handlePlaybackFailure({ permanent: isFileLevelMediaError(elements.audio.error) });
+  });
 
   if ("mediaSession" in navigator) {
     const handlers = {

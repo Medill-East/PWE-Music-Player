@@ -9,6 +9,7 @@ import {
   canControlVolume,
   trackSourceUrl,
   shouldResumePlayback,
+  isFileLevelMediaError,
 } from "../app.js";
 import { getLicenseLabel } from "../license.js";
 
@@ -166,4 +167,15 @@ test("shouldResumePlayback only recovers from unintended stops", () => {
 
   // 没有当前曲目（曲库耗尽/筛选为空）时无从恢复
   assert.equal(shouldResumePlayback({ ...base, hasTrack: false }), false);
+});
+
+test("only file-level media errors are allowed to blacklist a track", () => {
+  // 文件本身的问题：数据拿到了但解不开
+  assert.equal(isFileLevelMediaError({ code: 3 }), true, "DECODE 属于文件问题");
+  assert.equal(isFileLevelMediaError({ code: 4 }), true, "SRC_NOT_SUPPORTED 属于文件问题");
+
+  // 链路问题：换个时间多半就好了，拉黑会把好曲目一点点吃光
+  assert.equal(isFileLevelMediaError({ code: 2 }), false, "NETWORK 不能拉黑");
+  assert.equal(isFileLevelMediaError({ code: 1 }), false, "ABORTED 不能拉黑");
+  assert.equal(isFileLevelMediaError(null), false, "超时等无 MediaError 的情况不能拉黑");
 });
